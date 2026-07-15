@@ -1,6 +1,6 @@
 import { dbConnection } from "./mongoConnection.js";
 
-const getCollectionFn = (colleciton) => {
+const getCollectionFn = (collection) => {
   let _col = undefined;
 
   return async () => {
@@ -13,4 +13,4 @@ const getCollectionFn = (colleciton) => {
   };
 };
 
-export const userReports = getCollection("userReports");
+export const userReports = getCollectionFn("userReports");
