@@ -59,9 +59,13 @@ export const geocodeAddress = async (address, borough) => {
     const longitude = Number(location.lon);
 
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude))
-      throw "Address service provided invalid coordinates";
+      throw new Error("Address service provided invalid coordinates");
 
-    const formattedAddress = formatAddress(location.address || {}, borough, address);
+    const formattedAddress = formatAddress(
+      location.address || {},
+      borough,
+      address,
+    );
 
     return {
       address: formattedAddress,
@@ -71,6 +75,6 @@ export const geocodeAddress = async (address, borough) => {
   } catch (e) {
     if (typeof e === "string") throw e;
 
-    throw "Could not connect to geocode service";
+    throw new Error("Could not connect to geocode service");
   }
 };

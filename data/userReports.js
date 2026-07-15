@@ -2,6 +2,7 @@ import { ObjectId, ReturnDocument } from "mongodb";
 import { userReports } from "../config/mongoCollections.js";
 import * as validation from "./validation.js";
 import { geocodeAddress } from "./geocoding.js";
+import { NotFoundError } from "./error.js";
 
 export const createUserReport = async (
   authorId,
@@ -72,7 +73,8 @@ export const getUserReportById = async (id) => {
     _id: new ObjectId(id),
   });
 
-  if (!userReport) throw `No user report found with id '${id}'`;
+  if (!userReport)
+    throw new NotFoundError(`No user report found with id '${id}'`);
   userReport._id = userReport._id.toString();
   userReport.authorId = userReport.authorId.toString();
   return userReport;
@@ -87,7 +89,8 @@ export const removeUserReport = async (id) => {
     _id: new ObjectId(id),
   });
 
-  if (!deletedInfo) throw `Could not delete user report with id '${id}'`;
+  if (!deletedInfo)
+    throw new NotFoundError(`No user report found with id '${id}'`);
   return {
     userReportId: id,
     deleted: true,
@@ -125,10 +128,11 @@ export const updateUserReport = async (id, updates) => {
     { returnDocument: "after" },
   );
 
-  if (!updatedUserReport) throw `No user report found with id '${id}'`;
+  if (!updatedUserReport)
+    throw new NotFoundError(`No user report found with id '${id}'`);
 
   updatedUserReport._id = updatedUserReport._id.toString();
   updatedUserReport.authorId = updatedUserReport.authorId.toString();
-  
+
   return updatedUserReport;
 };
