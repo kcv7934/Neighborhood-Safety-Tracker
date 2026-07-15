@@ -26,7 +26,30 @@ export const validateNumber = (val, valName, min, max) => {
 
 export const validateId = (id, idName = "id") => {
   id = validateString(id, idName);
+
   if (!ObjectId.isValid(id)) throw `${idName} must be valid ObjectId`;
+
+  return id;
+};
+
+export const validateObject = (obj, objName) => {
+  if (obj === undefined) throw `${objName} must be provided`;
+
+  if (typeof obj !== "object" || Array.isArray(obj) || obj === null)
+    throw `${objName} is not of type 'Object'`;
+
+  if (Object.keys(obj).length === 0) throw `${objName} is empty`;
+
+  return obj;
+};
+
+export const validateObjectKeys = (obj, validKeys) => {
+  const objKeys = Object.keys(obj);
+  for (const key of objKeys) {
+    if (!validKeys.includes(key))
+      throw `Object contains not allowed key '${key}'`;
+  }
+  return obj;
 };
 
 /* userReports related validation */
@@ -38,6 +61,19 @@ const validBoroughs = [
   "BRONX",
   "STATEN ISLAND",
 ];
+
+export const validateBorough = (borough) => {
+  borough = validateString(borough, "borough");
+
+  const matchingBorough = validBoroughs.find(
+    (validBorough) => validBorough.toLowerCase() === borough.toLowerCase(),
+  );
+
+  if (!matchingBorough)
+    throw `Borough must be one of: ${validBoroughs.join(", ")}`;
+
+  return matchingBorough;
+};
 
 const validCategories = [
   "THEFT",
@@ -61,19 +97,6 @@ const validCategories = [
   "OTHER",
 ];
 
-export const validateBorough = (borough) => {
-  borough = validateString(borough, "borough");
-
-  const matchingBorough = validBoroughs.find(
-    (validBorough) => validBorough.toLowerCase() === borough.toLowerCase(),
-  );
-
-  if (!matchingBorough)
-    throw `Borough must be one of: ${validBoroughs.join(", ")}`;
-
-  return matchingBorough;
-};
-
 export const validateCategory = (category) => {
   category = validateString(category, "category");
 
@@ -93,4 +116,38 @@ export const validateAddress = (address) => {
   if (address.length > 50) throw "Address cannot be more than 50 characters";
 
   return address;
+};
+
+const validUpdates = ["category", "address", "borough", "description"];
+
+export const validateUpdateUserReport = (obj) => {
+  obj = validateObject(obj, "userReport");
+  obj = validateObjectKeys(obj, validUpdates);
+
+  const validatedUpdates = {};
+
+  for (const key of Object.keys(obj)) {
+    switch (key) {
+      case "category":
+        validatedUpdates.category = validateCategory(obj.category);
+        break;
+
+      case "address":
+        validatedUpdates.address = validateAddress(obj.address);
+        break;
+
+      case "borough":
+        validatedUpdates.borough = validateBorough(obj.borough);
+        break;
+
+      case "description":
+        validatedUpdates.description = validateString(
+          obj.description,
+          "description",
+        );
+        break;
+    }
+  }
+
+  return validatedUpdates;
 };
