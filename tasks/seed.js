@@ -35,6 +35,7 @@ const seedUserReports = async () => {
       updatedAt: now,
     },
   ];
+};
 
 const main = async () => {
   const db = await dbConnection();
