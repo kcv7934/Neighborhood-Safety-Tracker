@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 export const validateString = (val, valName) => {
   if (val === undefined || val === null) throw `${valName} must be provided`;
 
-  if (typeof val !== "string") throw `${valName} must of type 'string'`;
+  if (typeof val !== "string") throw `${valName} must be of type 'string'`;
 
   val = val.trim();
 
@@ -47,7 +47,7 @@ export const validateObjectKeys = (obj, validKeys) => {
   const objKeys = Object.keys(obj);
   for (const key of objKeys) {
     if (!validKeys.includes(key))
-      throw `Object contains not allowed key '${key}'`;
+      throw `Object contains unsupported field '${key}'`;
   }
   return obj;
 };
@@ -118,6 +118,18 @@ export const validateAddress = (address) => {
   return address;
 };
 
+export const validateDescription = (description) => {
+  description = validateString(description, "description");
+
+  if (description.length < 10)
+    throw "Description must be at least 10 characters";
+
+  if (description.length > 500)
+    throw "Description cannot be more than 500 characters";
+
+  return description;
+};
+
 const validUpdates = ["category", "address", "borough", "description"];
 
 export const validateUpdateUserReport = (obj) => {
@@ -141,10 +153,7 @@ export const validateUpdateUserReport = (obj) => {
         break;
 
       case "description":
-        validatedUpdates.description = validateString(
-          obj.description,
-          "description",
-        );
+        validatedUpdates.description = validateDescription(obj.description);
         break;
     }
   }

@@ -38,6 +38,8 @@ router
           .json({ error: "There are no fields in the request body" });
       }
 
+      // TODO authenticate authorId from session
+
       const { authorId, category, address, borough, description } = req.body;
 
       const newUserReport = await userReportData.createUserReport(

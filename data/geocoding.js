@@ -1,5 +1,10 @@
 import axios from "axios";
 
+const NYC_LATITUDE_MIN = 40.45;
+const NYC_LATITUDE_MAX = 40.95;
+const NYC_LONGITUDE_MIN = -74.3;
+const NYC_LONGITUDE_MAX = -73.65;
+
 const formatAddress = (addressDetails, borough, originalAddress) => {
   const houseNumber = addressDetails.house_number || "";
 
@@ -47,6 +52,7 @@ export const geocodeAddress = async (address, borough) => {
         headers: {
           "User-Agent": "NeighborhoodSafetyTracker/1.0",
         },
+        timeout: 5000,
       },
     );
 
@@ -57,6 +63,15 @@ export const geocodeAddress = async (address, borough) => {
 
     const latitude = Number(location.lat);
     const longitude = Number(location.lon);
+
+    if (
+      latitude < NYC_LATITUDE_MIN ||
+      latitude > NYC_LATITUDE_MAX ||
+      longitude < NYC_LONGITUDE_MIN ||
+      longitude > NYC_LONGITUDE_MAX
+    ) {
+      throw "Address must be located within New York City";
+    }
 
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude))
       throw new Error("Address service provided invalid coordinates");
@@ -75,6 +90,10 @@ export const geocodeAddress = async (address, borough) => {
   } catch (e) {
     if (typeof e === "string") throw e;
 
-    throw new Error("Could not connect to geocode service");
+    if (axios.isAxiosError(e)) {
+      throw new Error("The geocoding service is currently unavailable");
+    }
+
+    throw e;
   }
 };

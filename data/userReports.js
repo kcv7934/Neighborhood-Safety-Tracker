@@ -15,7 +15,7 @@ export const createUserReport = async (
   category = validation.validateCategory(category);
   address = validation.validateAddress(address);
   borough = validation.validateBorough(borough);
-  description = validation.validateString(description, "description");
+  description = validation.validateDescription(description);
 
   const location = await geocodeAddress(address, borough);
 
@@ -47,7 +47,7 @@ export const createUserReport = async (
   };
 };
 
-export const getAllUserReports = async () => {
+export const getAllUserReports = async (includeHidden = false) => {
   const userReportsCollection = await userReports();
 
   let userReportList = await userReportsCollection
@@ -64,14 +64,20 @@ export const getAllUserReports = async () => {
   return userReportList;
 };
 
-export const getUserReportById = async (id) => {
+export const getUserReportById = async (id, includeHidden = false) => {
   id = validation.validateId(id);
 
   const userReportsCollection = await userReports();
 
-  const userReport = await userReportsCollection.findOne({
+  const query = {
     _id: new ObjectId(id),
-  });
+  };
+
+  if (!includeHidden) {
+    query.status = "visible";
+  }
+
+  const userReport = await userReportsCollection.findOne(query);
 
   if (!userReport)
     throw new NotFoundError(`No user report found with id '${id}'`);
@@ -107,8 +113,8 @@ export const updateUserReport = async (id, updates) => {
   const updateBorough = Object.hasOwn(updates, "borough");
 
   if (updateAddress || updateBorough) {
-    const address = updateAddress ? updateAddress : userReport.address;
-    const borough = updateBorough ? updateBorough : userReport.borough;
+    const address = updateAddress ? updates.address : userReport.address;
+    const borough = updateBorough ? updates.borough : userReport.borough;
 
     const location = await geocodeAddress(address, borough);
 
