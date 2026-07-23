@@ -1,0 +1,35 @@
+<h1> Create User Report </h1>
+
+<form id="user-report-form">
+  <label for="category">Category</label>
+  <select id="category" name="category" required>
+    <option value="">Select a category</option>
+    {{#each categories}}
+      <option value="{{this}}">{{this}}</option>
+    {{/each}}
+  </select>
+
+  <label for="address">Address</label>
+  <input type="text" id="address" name="address" maxlength="50" required />
+
+  <label for="borough">Borough</label>
+  <select id="borough" name="borough" required>
+    <option value="">Select a borough</option>
+    {{#each boroughs}}
+      <option value="{{this}}">{{this}}</option>
+    {{/each}}
+  </select>
+
+  <label for="description">Description</label>
+  <textarea
+    id="description"
+    name="description"
+    minlength="10"
+    maxlength="500"
+    required
+  ></textarea>
+
+  <button type="submit">Submit Report</button>
+
+  <div id="form-message" role="alert"></div>
+</form>
