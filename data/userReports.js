@@ -1,4 +1,4 @@
-import { ObjectId, ReturnDocument } from "mongodb";
+import { ObjectId } from "mongodb";
 import { userReports } from "../config/mongoCollections.js";
 import * as validation from "./validation.js";
 import { geocodeAddress } from "./geocoding.js";
@@ -50,8 +50,10 @@ export const createUserReport = async (
 export const getAllUserReports = async (includeHidden = false) => {
   const userReportsCollection = await userReports();
 
+  const query = includeHidden ? {} : { status: "visible" };
+
   let userReportList = await userReportsCollection
-    .find({ status: "visible" })
+    .find(query)
     .sort({ createdAt: -1 })
     .toArray();
 
@@ -141,4 +143,22 @@ export const updateUserReport = async (id, updates) => {
   updatedUserReport.authorId = updatedUserReport.authorId.toString();
 
   return updatedUserReport;
+};
+
+export const getUserReportsByAuthor = async (authorId) => {
+  authorId = validation.validateId(authorId, "authorId");
+
+  const userReportsCollection = await userReports();
+
+  let reports = await userReportsCollection
+    .find({ authorId: new ObjectId(authorId), status: "visible" })
+    .sort({ createdAt: -1 })
+    .toArray();
+
+  reports = reports.map((report) => {
+    report._id = report._id.toString();
+    report.authorId = report.authorId.toString();
+    return report;
+  });
+  return reports;
 };

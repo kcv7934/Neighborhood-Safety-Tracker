@@ -26,9 +26,7 @@ if (form) {
 
       // axios POST request
 
-      // TODO: using test authorId from seed.js until user authentication is implemented
       const userReportData = {
-        authorId: "687000000000000000000001",
         category,
         address,
         borough,

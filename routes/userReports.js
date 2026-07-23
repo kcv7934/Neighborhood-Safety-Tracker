@@ -39,9 +39,9 @@ router
           .json({ error: "There are no fields in the request body" });
       }
 
-      // TODO authenticate authorId from session
-
-      const { authorId, category, address, borough, description } = req.body;
+      // TODO: replace with req.session.user._id when authentication is implemented
+      const authorId = "687000000000000000000001";
+      const { category, address, borough, description } = req.body;
 
       const newUserReport = await userReportData.createUserReport(
         authorId,
@@ -64,6 +64,27 @@ router.get("/create", (req, res) => {
     boroughs: validation.validBoroughs,
     partial: "user_report_script",
   });
+});
+
+router.get("/my-reports", async (req, res) => {
+  try {
+    // TODO: temporary authorId to be used until users collection is implemented
+    const authorId = "687000000000000000000001";
+
+    const reports = await userReportData.getUserReportsByAuthor(authorId);
+
+    return res.render("userReports/myReports", {
+      title: "My Reports",
+      reports,
+    });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).render("error", {
+      title: "Server Error",
+      statusCode: 500,
+      error: "Something went wrong while loading your reports"
+    });
+  }
 });
 
 router
