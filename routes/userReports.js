@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as userReportData from "../data/userReports.js";
 import { NotFoundError } from "../data/error.js";
+import * as validation from "../data/validation.js";
 
 const router = Router();
 
@@ -55,6 +56,15 @@ router
       return handleError(e, res);
     }
   });
+
+router.get("/create", (req, res) => {
+  return res.render("userReports/create", {
+    title: "Create User Report",
+    categories: validation.validCategories,
+    boroughs: validation.validBoroughs,
+    partial: "user_report_script",
+  });
+});
 
 router
   .route("/:userReportId")

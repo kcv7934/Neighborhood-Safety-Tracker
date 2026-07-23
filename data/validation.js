@@ -54,7 +54,7 @@ export const validateObjectKeys = (obj, validKeys) => {
 
 /* userReports related validation */
 
-const validBoroughs = [
+export const validBoroughs = [
   "MANHATTAN",
   "BROOKLYN",
   "QUEENS",
@@ -75,7 +75,7 @@ export const validateBorough = (borough) => {
   return matchingBorough;
 };
 
-const validCategories = [
+export const validCategories = [
   "THEFT",
   "MOTOR VEHICLE THEFT",
   "ROBBERY",

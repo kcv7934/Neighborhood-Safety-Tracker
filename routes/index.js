@@ -5,7 +5,7 @@ const constructorMethod = (app) => {
     res.json({ message: "Neighborhood Safety Tracker" });
   });
 
-  app.use("/userReports", userReportRoutes);
+  app.use("/user-reports", userReportRoutes);
 
   app.use((req, res) => {
     res.status(404).json({
