@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { userReports } from "../config/mongoCollections.js";
 import * as validation from "./validation.js";
 import { geocodeAddress } from "./geocoding.js";
-import { NotFoundError } from "./error.js";
+import { NotFoundError, ForbiddenError } from "./error.js";
 
 export const createUserReport = async (
   authorId,
@@ -88,6 +88,15 @@ export const getUserReportById = async (id, includeHidden = false) => {
   return userReport;
 };
 
+export const getUserReportByIdForAuthor = async (id, currentUserId) => {
+  currentUserId = validation.validateId(currentUserId, "curentUserId");
+  const userReport = await getUserReportById(id);
+  if (userReport.authorId !== currentUserId) {
+    throw new ForbiddenError("You cannot access another user's report");
+  }
+  return userReport;
+};
+
 export const removeUserReport = async (id) => {
   id = validation.validateId(id);
 
@@ -105,18 +114,21 @@ export const removeUserReport = async (id) => {
   };
 };
 
-export const updateUserReport = async (id, updates) => {
+export const updateUserReport = async (id, currentUserId, updates) => {
   id = validation.validateId(id);
+
+  currentUserId = validation.validateId(currentUserId, "currentUserId");
+
   updates = validation.validateUpdateUserReport(updates);
 
-  const userReport = await getUserReportById(id);
+  const userReport = await getUserReportByIdForAuthor(id, currentUserId);
 
-  const updateAddress = Object.hasOwn(updates, "address");
-  const updateBorough = Object.hasOwn(updates, "borough");
+  const addressChanged = Object.hasOwn(updates, "address") && updates.address !== userReport.address
+  const boroughChanged = Object.hasOwn(updates, "borough") && updates.borough !== userReport.borough
 
-  if (updateAddress || updateBorough) {
-    const address = updateAddress ? updates.address : userReport.address;
-    const borough = updateBorough ? updates.borough : userReport.borough;
+  if (addressChanged || boroughChanged) {
+    const address = addressChanged ? updates.address : userReport.address;
+    const borough = boroughChanged ? updates.borough : userReport.borough;
 
     const location = await geocodeAddress(address, borough);
 

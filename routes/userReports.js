@@ -1,6 +1,6 @@
 import { Router } from "express";
 import * as userReportData from "../data/userReports.js";
-import { NotFoundError } from "../data/error.js";
+import { NotFoundError, ForbiddenError } from "../data/error.js";
 import * as validation from "../data/validation.js";
 
 const router = Router();
@@ -10,6 +10,10 @@ const TEMP_AUTHOR_ID = "687000000000000000000001";
 const handleApiError = (e, res) => {
   if (e instanceof NotFoundError) {
     return res.status(404).json({ error: e.message });
+  }
+
+  if (e instanceof ForbiddenError) {
+    return res.status(403).json({ error: e.message });
   }
 
   if (typeof e === "string") {
@@ -28,6 +32,14 @@ const handlePageError = (e, res) => {
     return res.status(404).render("error", {
       title: "Report Not Found",
       statusCode: 404,
+      error: e.message,
+    });
+  }
+
+  if (e instanceof ForbiddenError) {
+    return res.status(403).render("error", {
+      title: "Forbidden",
+      statusCode: 403,
       error: e.message,
     });
   }
@@ -110,6 +122,45 @@ router.get("/my-reports", async (req, res) => {
   }
 });
 
+router.get("/:userReportId/edit", async (req, res) => {
+  try {
+    const id = req.params.userReportId;
+
+    const userReport = await userReportData.getUserReportByIdForAuthor(
+      id,
+      TEMP_AUTHOR_ID,
+    );
+
+    const currentCategory = userReport.category;
+
+    const categories = validation.validCategories.map((category) => {
+      return {
+        value: category,
+        selected: category === currentCategory,
+      };
+    });
+
+    const currentBorough = userReport.borough;
+
+    const boroughs = validation.validBoroughs.map((borough) => {
+      return {
+        value: borough,
+        selected: borough === currentBorough,
+      };
+    });
+
+    return res.render("userReports/edit", {
+      title: "Edit User Report",
+      report: userReport,
+      categories,
+      boroughs,
+      partial: "user_report_script",
+    });
+  } catch (e) {
+    return handlePageError(e, res);
+  }
+});
+
 router
   .route("/:userReportId")
   .get(async (req, res) => {
@@ -124,9 +175,19 @@ router
         updatedAt: userReport.updatedAt.toLocaleString(),
       };
 
+      let successMessage = null;
+
+      if (req.query.created === "true") {
+        successMessage = "Report created successfully";
+      } else if (req.query.updated === "true") {
+        successMessage = "Report updated successfully";
+      }
+
       return res.render("userReports/reportDetails", {
         title: "User Report Detail",
         report: preparedUserReport,
+        isOwner: userReport.authorId === TEMP_AUTHOR_ID,
+        successMessage,
       });
     } catch (e) {
       return handlePageError(e, res);
@@ -143,6 +204,7 @@ router
       const updates = req.body;
       const updatedUserReport = await userReportData.updateUserReport(
         id,
+        TEMP_AUTHOR_ID,
         updates,
       );
       return res.status(200).json(updatedUserReport);

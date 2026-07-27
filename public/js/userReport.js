@@ -1,56 +1,90 @@
-const form = document.getElementById("user-report-form");
-const message = document.getElementById("form-message");
+const createForm = document.getElementById("create-user-report-form");
+const editForm = document.getElementById("edit-user-report-form");
 
-if (form) {
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+const getUserReportFormData = (form) => {
+  const category = form.elements.category.value.trim();
+  const address = form.elements.address.value.trim();
+  const borough = form.elements.borough.value.trim();
+  const description = form.elements.description.value.trim();
 
-    message.hidden = true;
-    message.textContent = "";
+  if (!category) throw "You must select a category";
 
-    const category = document.getElementById("category").value.trim();
-    const address = document.getElementById("address").value.trim();
-    const borough = document.getElementById("borough").value.trim();
-    const description = document.getElementById("description").value.trim();
+  if (!address) throw "You must provide an address";
 
-    try {
-      if (!category) throw "You must select a category";
-      if (!address) throw "Address must be provided";
-      if (address.length > 50)
-        throw "Address cannot be more than 50 characters";
-      if (!borough) throw "You must select a borough";
-      if (description.length < 10)
-        throw "Description must be at least 10 characters";
-      if (description.length > 500)
-        throw "Description cannot be more than 500 characters";
+  if (address.length > 50) throw "Address cannot be more than 50 characters";
 
-      // axios POST request
+  if (!borough) throw "You must select a borough";
 
-      const userReportData = {
-        category,
-        address,
-        borough,
-        description,
-      };
+  if (description.length < 10)
+    throw "Description must be at least 10 characters";
 
-      const response = await axios.post("/user-reports", userReportData);
+  if (description.length > 500)
+    throw "Description cannot be more than 500 characters";
 
-      message.textContent = "Report created successfully";
-      message.hidden = false;
+  return { category, address, borough, description };
+};
 
-      form.reset();
+const displayFormErrorMessage = (error, messageElement, providedMessage) => {
+  if (error.response?.data?.error) {
+    messageElement.textContent = error.response.data.error;
+  } else if (typeof error === "string") {
+    messageElement.textContent = error;
+  } else {
+    console.error(error);
+    messageElement.textContent = providedMessage;
+  }
 
-      console.log(response.data);
-    } catch (e) {
-      if (e.response?.data?.error) {
-        message.textContent = e.response.data.error;
-      } else if (typeof e === "string") {
-        message.textContent = e;
-      } else {
-        console.error(e);
-        message.textContent = "Could not create user report";
-      }
-      message.hidden = false;
-    }
-  });
+  messageElement.hidden = false;
+};
+
+const createUserReport = async (event) => {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+
+  const message = document.getElementById("form-message");
+
+  message.hidden = true;
+  message.textContent = "";
+
+  try {
+    const userReportData = getUserReportFormData(form);
+
+    const response = await axios.post("/user-reports", userReportData);
+
+    const reportId = response.data._id;
+
+    window.location.href = `/user-reports/${reportId}?created=true`;
+  } catch (error) {
+    displayFormErrorMessage(error, message, "Could not create user report");
+  }
+};
+
+const editUserReport = async (event) => {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const message = document.getElementById("form-message");
+
+  message.hidden = true;
+  message.textContent = "";
+
+  try {
+    const reportId = form.elements.reportId.value;
+    const userReportData = getUserReportFormData(form);
+
+    await axios.patch(`/user-reports/${reportId}`, userReportData);
+
+    window.location.href = `/user-reports/${reportId}?updated=true`;
+  } catch (error) {
+    displayFormErrorMessage(error, message, "Could not update user report");
+  }
+};
+
+if (createForm) {
+  createForm.addEventListener("submit", createUserReport);
+}
+
+if (editForm) {
+  editForm.addEventListener("submit", editUserReport);
 }

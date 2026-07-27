@@ -38,12 +38,23 @@ const formatAddress = (addressDetails, borough, originalAddress) => {
 };
 
 export const geocodeAddress = async (address, borough) => {
+  const addressContainsBorough = address
+    .split(",")
+    .some(
+      (addressPart) =>
+        addressPart.trim().toLowerCase() === borough.toLowerCase(),
+    );
+
+  const searchQuery = addressContainsBorough
+    ? `${address}, New York City, New York`
+    : `${address}, ${borough}, New York City, New York`;
+
   try {
     const response = await axios.get(
       "https://nominatim.openstreetmap.org/search",
       {
         params: {
-          q: `${address}, ${borough}, New York City, New York`,
+          q: searchQuery,
           format: "jsonv2",
           addressdetails: 1,
           countrycodes: "us",
@@ -57,7 +68,7 @@ export const geocodeAddress = async (address, borough) => {
     );
 
     if (!Array.isArray(response.data) || response.data.length === 0)
-      throw `Address '${address}, ${borough}, New York City, New York' could not be found`;
+      throw `Address '${searchQuery}' could not be found`;
 
     const location = response.data[0];
 
