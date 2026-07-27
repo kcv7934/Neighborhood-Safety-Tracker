@@ -1,9 +1,9 @@
 <h1>User Report Details</h1>
 
 {{#if successMessage}}
-    <p role="status">
-        {{successMessage}}
-    </p>
+  <p role="status">
+    {{successMessage}}
+  </p>
 {{/if}}
 
 <article>
@@ -44,6 +44,11 @@
   <p>
     <a href="/user-reports/{{report._id}}/edit">Edit Report</a>
   </p>
+
+  <button type="button" id="delete-user-report-button" value="{{report._id}}">Delete
+    Report</button>
+
+  <div id="delete-message" role="alert" hidden></div>
 {{/if}}
 
 <p>

@@ -97,13 +97,18 @@ export const getUserReportByIdForAuthor = async (id, currentUserId) => {
   return userReport;
 };
 
-export const removeUserReport = async (id) => {
+export const removeUserReport = async (id, currentUserId) => {
   id = validation.validateId(id);
+
+  currentUserId = validation.validateId(currentUserId, "currentUserId");
+
+  await getUserReportByIdForAuthor(id, currentUserId);
 
   const userReportsCollection = await userReports();
 
   const deletedInfo = await userReportsCollection.findOneAndDelete({
     _id: new ObjectId(id),
+    authorId: new ObjectId(currentUserId),
   });
 
   if (!deletedInfo)
@@ -123,8 +128,10 @@ export const updateUserReport = async (id, currentUserId, updates) => {
 
   const userReport = await getUserReportByIdForAuthor(id, currentUserId);
 
-  const addressChanged = Object.hasOwn(updates, "address") && updates.address !== userReport.address
-  const boroughChanged = Object.hasOwn(updates, "borough") && updates.borough !== userReport.borough
+  const addressChanged =
+    Object.hasOwn(updates, "address") && updates.address !== userReport.address;
+  const boroughChanged =
+    Object.hasOwn(updates, "borough") && updates.borough !== userReport.borough;
 
   if (addressChanged || boroughChanged) {
     const address = addressChanged ? updates.address : userReport.address;

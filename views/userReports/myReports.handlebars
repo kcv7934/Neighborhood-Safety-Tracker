@@ -1,5 +1,11 @@
 <h1>My Reports</h1>
 
+{{#if successMessage}}
+  <p role="status">
+    {{successMessage}}
+  </p>
+{{/if}}
+
 <p>
   <a href="/user-reports/create">Create a New Report</a>
 </p>

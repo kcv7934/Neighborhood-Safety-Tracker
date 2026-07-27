@@ -113,9 +113,13 @@ router.get("/my-reports", async (req, res) => {
 
     const reports = await userReportData.getUserReportsByAuthor(authorId);
 
+    const successMessage =
+      req.query.deleted === "true" ? "Report deleted successfully" : null;
+
     return res.render("userReports/myReports", {
       title: "My Reports",
       reports,
+      successMessage,
     });
   } catch (e) {
     return handlePageError(e, res);
@@ -188,6 +192,7 @@ router
         report: preparedUserReport,
         isOwner: userReport.authorId === TEMP_AUTHOR_ID,
         successMessage,
+        partial: "user_report_script",
       });
     } catch (e) {
       return handlePageError(e, res);
@@ -215,7 +220,10 @@ router
   .delete(async (req, res) => {
     try {
       const id = req.params.userReportId;
-      const deletedInfo = await userReportData.removeUserReport(id);
+      const deletedInfo = await userReportData.removeUserReport(
+        id,
+        TEMP_AUTHOR_ID,
+      );
       return res.status(200).json(deletedInfo);
     } catch (e) {
       return handleApiError(e, res);
