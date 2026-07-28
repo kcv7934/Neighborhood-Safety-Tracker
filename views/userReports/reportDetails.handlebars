@@ -1,0 +1,56 @@
+<h1>User Report Details</h1>
+
+{{#if successMessage}}
+  <p role="status">
+    {{successMessage}}
+  </p>
+{{/if}}
+
+<article>
+  <h2>{{report.category}}</h2>
+
+  <p>
+    Address:
+    {{report.address}}
+  </p>
+
+  <p>
+    Borough:
+    {{report.borough}}
+  </p>
+
+  <p>
+    Description:
+    {{report.description}}
+  </p>
+
+  <p>
+    Status:
+    {{report.status}}
+  </p>
+
+  <p>
+    Created:
+    {{report.createdAt}}
+  </p>
+
+  <p>
+    Last Updated:
+    {{report.updatedAt}}
+  </p>
+</article>
+
+{{#if isOwner}}
+  <p>
+    <a href="/user-reports/{{report._id}}/edit">Edit Report</a>
+  </p>
+
+  <button type="button" id="delete-user-report-button" value="{{report._id}}">Delete
+    Report</button>
+
+  <div id="delete-message" role="alert" hidden></div>
+{{/if}}
+
+<p>
+  <a href="/user-reports/my-reports">Back to My Reports</a>
+</p>

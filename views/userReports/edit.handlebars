@@ -1,0 +1,35 @@
+<h1>Edit User Report</h1>
+
+<form id="edit-user-report-form">
+    <input type="hidden" name="reportId" value="{{report._id}}"/>
+
+    <label for="category">Category</label>
+    <select id="category" name="category" required>
+        {{#each categories}}
+            <option value="{{value}}" {{#if selected}} selected {{/if}}>
+                {{value}}
+            </option>
+        {{/each}}
+    </select>
+
+    <label for="address">Address</label>
+    <input type="text" id="address" name="address" value="{{report.address}}" maxlength="50" required/>
+
+    <label for="borough">Borough</label>
+    <select id="borough" name="borough" required>
+        {{#each boroughs}}
+            <option value="{{value}}" {{#if selected}} selected {{/if}}>
+                {{value}}
+            </option>
+        {{/each}}
+    </select>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description" minlength="10" maxlength="500" required>{{report.description}}</textarea>
+
+    <button type="submit">Save Changes</button>
+
+    <a href="/user-reports/{{report._id}}">Cancel</a>
+
+    <div id="form-message" role="alert" hidden></div>
+</form>

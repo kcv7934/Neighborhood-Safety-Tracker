@@ -1,8 +1,8 @@
-import { ObjectId, ReturnDocument } from "mongodb";
+import { ObjectId } from "mongodb";
 import { userReports } from "../config/mongoCollections.js";
 import * as validation from "./validation.js";
 import { geocodeAddress } from "./geocoding.js";
-import { NotFoundError } from "./error.js";
+import { NotFoundError, ForbiddenError } from "./error.js";
 
 export const createUserReport = async (
   authorId,
@@ -50,8 +50,10 @@ export const createUserReport = async (
 export const getAllUserReports = async (includeHidden = false) => {
   const userReportsCollection = await userReports();
 
+  const query = includeHidden ? {} : { status: "visible" };
+
   let userReportList = await userReportsCollection
-    .find({ status: "visible" })
+    .find(query)
     .sort({ createdAt: -1 })
     .toArray();
 
@@ -86,13 +88,27 @@ export const getUserReportById = async (id, includeHidden = false) => {
   return userReport;
 };
 
-export const removeUserReport = async (id) => {
+export const getUserReportByIdForAuthor = async (id, currentUserId) => {
+  currentUserId = validation.validateId(currentUserId, "curentUserId");
+  const userReport = await getUserReportById(id);
+  if (userReport.authorId !== currentUserId) {
+    throw new ForbiddenError("You cannot access another user's report");
+  }
+  return userReport;
+};
+
+export const removeUserReport = async (id, currentUserId) => {
   id = validation.validateId(id);
+
+  currentUserId = validation.validateId(currentUserId, "currentUserId");
+
+  await getUserReportByIdForAuthor(id, currentUserId);
 
   const userReportsCollection = await userReports();
 
   const deletedInfo = await userReportsCollection.findOneAndDelete({
     _id: new ObjectId(id),
+    authorId: new ObjectId(currentUserId),
   });
 
   if (!deletedInfo)
@@ -103,18 +119,23 @@ export const removeUserReport = async (id) => {
   };
 };
 
-export const updateUserReport = async (id, updates) => {
+export const updateUserReport = async (id, currentUserId, updates) => {
   id = validation.validateId(id);
+
+  currentUserId = validation.validateId(currentUserId, "currentUserId");
+
   updates = validation.validateUpdateUserReport(updates);
 
-  const userReport = await getUserReportById(id);
+  const userReport = await getUserReportByIdForAuthor(id, currentUserId);
 
-  const updateAddress = Object.hasOwn(updates, "address");
-  const updateBorough = Object.hasOwn(updates, "borough");
+  const addressChanged =
+    Object.hasOwn(updates, "address") && updates.address !== userReport.address;
+  const boroughChanged =
+    Object.hasOwn(updates, "borough") && updates.borough !== userReport.borough;
 
-  if (updateAddress || updateBorough) {
-    const address = updateAddress ? updates.address : userReport.address;
-    const borough = updateBorough ? updates.borough : userReport.borough;
+  if (addressChanged || boroughChanged) {
+    const address = addressChanged ? updates.address : userReport.address;
+    const borough = boroughChanged ? updates.borough : userReport.borough;
 
     const location = await geocodeAddress(address, borough);
 
@@ -141,4 +162,22 @@ export const updateUserReport = async (id, updates) => {
   updatedUserReport.authorId = updatedUserReport.authorId.toString();
 
   return updatedUserReport;
+};
+
+export const getUserReportsByAuthor = async (authorId) => {
+  authorId = validation.validateId(authorId, "authorId");
+
+  const userReportsCollection = await userReports();
+
+  let reports = await userReportsCollection
+    .find({ authorId: new ObjectId(authorId), status: "visible" })
+    .sort({ createdAt: -1 })
+    .toArray();
+
+  reports = reports.map((report) => {
+    report._id = report._id.toString();
+    report.authorId = report.authorId.toString();
+    return report;
+  });
+  return reports;
 };
