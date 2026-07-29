@@ -52,6 +52,26 @@ export const validateObjectKeys = (obj, validKeys) => {
   return obj;
 };
 
+export const validateArray = (arr, arrName, minLength = 0, maxLength = 100) => {
+  if (arr === undefined || arr === null) {
+    throw `${arrName} must be provided`;
+  }
+
+  if (!Array.isArray(arr)) {
+    throw `${arrName} must be of type 'array'`;
+  }
+
+  if (arr.length < minLength) {
+    throw `${arrName} must contain at least ${minLength} items`;
+  }
+
+  if (arr.length > maxLength) {
+    throw `${arrName} must contain at most ${maxLength} items`;
+  }
+
+  return arr;
+};
+
 /* userReports related validation */
 
 export const validBoroughs = [
@@ -130,11 +150,16 @@ export const validateDescription = (description) => {
   return description;
 };
 
-const validUpdates = ["category", "address", "borough", "description"];
+const validUserReportUpdates = [
+  "category",
+  "address",
+  "borough",
+  "description",
+];
 
 export const validateUpdateUserReport = (obj) => {
   obj = validateObject(obj, "userReport");
-  obj = validateObjectKeys(obj, validUpdates);
+  obj = validateObjectKeys(obj, validUserReportUpdates);
 
   const validatedUpdates = {};
 
@@ -159,4 +184,80 @@ export const validateUpdateUserReport = (obj) => {
   }
 
   return validatedUpdates;
+};
+
+/* savedLocations related validation */
+
+export const validateLocationLabel = (label) => {
+  label = validateString(label, "label");
+
+  if (label.length > 50) {
+    throw "Label cannot be more than 50 characters";
+  }
+
+  return label;
+};
+
+export const validateTags = (tags) => {
+  tags = validateArray(tags, "tags", 0, 10);
+
+  const validatedTags = [];
+
+  const tagCandidates = new Set();
+
+  for (let i = 0; i < tags.length; i++) {
+    const tag = validateTag(tags[i], `tag at index ${i}`);
+
+    const cleanedTag = tag.toLowerCase();
+
+    if (tagCandidates.has(cleanedTag)) {
+      throw "Tags must be unique";
+    }
+
+    tagCandidates.add(cleanedTag);
+    validatedTags.push(tag);
+  }
+
+  return validatedTags;
+};
+
+const validSavedLocationUpdates = ["label", "address", "borough", "tags"];
+
+export const validateUpdateSavedLocation = (obj) => {
+  obj = validateObject(obj, "savedLocation");
+
+  obj = validateObjectKeys(obj, validSavedLocationUpdates);
+
+  const validatedUpdates = {};
+
+  for (const key of Object.keys(obj)) {
+    switch (key) {
+      case "label":
+        validatedUpdates.label = validateLocationLabel(obj.label);
+        break;
+      case "address":
+        validatedUpdates.address = validateAddress(obj.address);
+        break;
+      case "borough":
+        validatedUpdates.borough = validateBorough(obj.borough);
+        break;
+      case "tags":
+        validatedUpdates.tags = validateTags(obj.tags);
+        break;
+    }
+  }
+
+  return validatedUpdates;
+};
+
+export const validateTag = (tag, tagName = "tag") => {
+  tag = validateString(tag, tagName);
+
+  if (tag.length > 25) throw "A tag cannot be more than 25 characters";
+
+  if (!/^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$/.test(tag)) {
+    throw "Tags may only contain letters, numbers, and single spaces";
+  }
+
+  return tag;
 };
