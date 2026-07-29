@@ -11,8 +11,10 @@ router
   .route("/")
   .get(async (req, res) => {
     try {
+      const tag = req.query.tag;
+
       const savedLocationList =
-        await savedLocationData.getSavedLocationsByUser(TEMP_AUTHOR_ID);
+        await savedLocationData.getSavedLocationsByUser(TEMP_AUTHOR_ID, tag);
 
       return res.status(200).json(savedLocationList);
     } catch (e) {

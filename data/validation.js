@@ -206,11 +206,7 @@ export const validateTags = (tags) => {
   const tagCandidates = new Set();
 
   for (let i = 0; i < tags.length; i++) {
-    const tag = validateString(tags[i], `tag at index ${i}`);
-
-    if (tag.length > 25) {
-      throw "A tag cannot be more than 25 characters";
-    }
+    const tag = validateTag(tags[i], `tag at index ${i}`);
 
     const cleanedTag = tag.toLowerCase();
 
@@ -252,4 +248,16 @@ export const validateUpdateSavedLocation = (obj) => {
   }
 
   return validatedUpdates;
+};
+
+export const validateTag = (tag, tagName = "tag") => {
+  tag = validateString(tag, tagName);
+
+  if (tag.length > 25) throw "A tag cannot be more than 25 characters";
+
+  if (!/^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$/.test(tag)) {
+    throw "Tags may only contain letters, numbers, and single spaces";
+  }
+
+  return tag;
 };

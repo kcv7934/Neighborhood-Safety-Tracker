@@ -71,13 +71,26 @@ export const getSavedLocationById = async (id) => {
   return prepareSavedLocation(savedLocation);
 };
 
-export const getSavedLocationsByUser = async (userId) => {
+export const getSavedLocationsByUser = async (userId, tag) => {
   userId = validation.validateId(userId, "userId");
+
+  const query = {
+    userId: new ObjectId(userId),
+  };
+
+  if (tag !== undefined) {
+    tag = validation.validateTag(tag);
+
+    query.tags = {
+      $regex: `^${tag}$`,
+      $options: "i",
+    };
+  }
 
   const savedLocationsCollection = await savedLocations();
 
   const savedLocationList = await savedLocationsCollection
-    .find({ userId: new ObjectId(userId) })
+    .find(query)
     .sort({ label: 1 })
     .toArray();
 
