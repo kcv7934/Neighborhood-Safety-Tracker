@@ -1,0 +1,36 @@
+<h1>Saved Location Details</h1>
+
+{{#if successMessage}}
+  <p>{{successMessage}}</p>
+{{/if}}
+
+<article>
+  <h2>{{location.label}}</h2>
+
+  <p>Address: {{location.address}}</p>
+
+  <p>Latitude: {{location.latitude}}</p>
+
+  <p>Longitude: {{location.longitude}}</p>
+
+  {{#if location.tags.length}}
+    <p>Tags:</p>
+
+    <ul>
+      {{#each location.tags}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p>No tags</p>
+  {{/if}}
+</article>
+
+<p>
+  <a href="/saved-locations/{{location._id}}/edit">Edit Saved Location</a>
+</p>
+
+<p>
+  <a href="/saved-locations/my-locations">Back to My Saved Locations</a>
+</p>
+

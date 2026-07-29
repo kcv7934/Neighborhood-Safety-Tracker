@@ -92,9 +92,18 @@ router
         TEMP_AUTHOR_ID,
       );
 
-      return res.status(200).json(savedLocation);
+      const successMessage =
+        req.query.updated === "true"
+          ? "Saved location updated successfully"
+          : null;
+
+      return res.render("savedLocations/locationDetails", {
+        title: "Saved Location Details",
+        location: savedLocation,
+        successMessage,
+      });
     } catch (e) {
-      return handleApiError(e, res);
+      return handlePageError(e, res, "Saved Location");
     }
   })
   .patch(async (req, res) => {
