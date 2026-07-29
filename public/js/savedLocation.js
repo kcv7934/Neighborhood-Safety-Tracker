@@ -1,4 +1,5 @@
 const createForm = document.getElementById("create-saved-location-form");
+const editForm = document.getElementById("edit-saved-location-form");
 
 const getSavedLocationFormData = (form) => {
   const label = form.elements.label.value.trim();
@@ -8,7 +9,7 @@ const getSavedLocationFormData = (form) => {
 
   if (!label) throw "You must provide a label";
 
-  if (label.length > 50) throw "You must provide a label";
+  if (label.length > 50) throw "Label cannot be more than 50 characters";
 
   if (!address) throw "You must provide an address";
 
@@ -84,6 +85,33 @@ const createSavedLocation = async (event) => {
   }
 };
 
+const editSavedLocation = async (event) => {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+
+  const message = document.getElementById("form-message");
+
+  message.hidden = true;
+  message.textContent = "";
+
+  try {
+    const savedLocationId = form.elements.savedLocationId.value;
+
+    const savedLocationData = getSavedLocationFormData(form);
+
+    await axios.patch(`/saved-locations/${savedLocationId}`, savedLocationData);
+
+    window.location.href = `/saved-locations/${savedLocationId}?updated=true`;
+  } catch (error) {
+    displayFormErrorMessage(error, message);
+  }
+};
+
 if (createForm) {
   createForm.addEventListener("submit", createSavedLocation);
+}
+
+if (editForm) {
+  editForm.addEventListener("submit", editSavedLocation);
 }

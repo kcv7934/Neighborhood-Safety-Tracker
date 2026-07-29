@@ -49,7 +49,7 @@ router
 
 router.get("/create", (req, res) => {
   return res.render("savedLocations/create", {
-    title: "Save A Location",
+    title: "Save a Location",
     boroughs: validation.validBoroughs,
     partial: "saved_location_script",
   });
@@ -64,10 +64,13 @@ router.get("/my-locations", async (req, res) => {
       tag,
     );
 
-    const successMessage =
-      req.query.deleted === "true"
-        ? "Saved location deleted successfully"
-        : null;
+    let successMessage = null;
+
+    if (req.query.created === "true") {
+      successMessage = "Saved location created successfully";
+    } else if (req.query.deleted === "true") {
+      successMessage = "Saved location deleted successfulyl";
+    }
 
     return res.render("savedLocations/myLocations", {
       title: "My Saved Locations",
@@ -75,6 +78,42 @@ router.get("/my-locations", async (req, res) => {
       selectedTag: tag || "",
       hasFilter: tag !== undefined,
       successMessage,
+    });
+  } catch (e) {
+    return handlePageError(e, res, "Saved Location");
+  }
+});
+
+router.get("/:savedLocationId/edit", async (req, res) => {
+  try {
+    const id = req.params.savedLocationId;
+
+    const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
+      id,
+      TEMP_AUTHOR_ID,
+    );
+
+    const currentBorough = validation.validBoroughs.find((borough) => {
+      return savedLocation.address.includes(`, ${borough},`);
+    });
+
+    const boroughs = validation.validBoroughs.map((borough) => {
+      return {
+        value: borough,
+        selected: borough === currentBorough,
+      };
+    });
+
+    const preparedLocation = {
+      ...savedLocation,
+      tagsStr: savedLocation.tags.join(", "),
+    };
+
+    return res.render("savedLocations/edit", {
+      title: "Edit Saved Location",
+      location: preparedLocation,
+      boroughs,
+      partial: "saved_location_script",
     });
   } catch (e) {
     return handlePageError(e, res, "Saved Location");
