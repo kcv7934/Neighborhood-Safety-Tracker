@@ -1,7 +1,6 @@
 import { Router } from "express";
 import * as savedLocationData from "../data/savedLocations.js";
-import { NotFoundError, ForbiddenError } from "../data/error.js";
-import { handleApiError } from "./errorHandlers.js";
+import { handleApiError, handlePageError } from "./errorHandlers.js";
 
 const router = Router();
 
@@ -13,8 +12,10 @@ router
     try {
       const tag = req.query.tag;
 
-      const savedLocationList =
-        await savedLocationData.getSavedLocationsByUser(TEMP_AUTHOR_ID, tag);
+      const savedLocationList = await savedLocationData.getSavedLocationsByUser(
+        TEMP_AUTHOR_ID,
+        tag,
+      );
 
       return res.status(200).json(savedLocationList);
     } catch (e) {
@@ -44,6 +45,32 @@ router
       return handleApiError(e, res);
     }
   });
+
+router.get("/my-locations", async (req, res) => {
+  try {
+    const tag = req.query.tag;
+
+    const mySavedLocations = await savedLocationData.getSavedLocationsByUser(
+      TEMP_AUTHOR_ID,
+      tag,
+    );
+
+    const successMessage =
+      req.query.deleted === "true"
+        ? "Saved location deleted successfully"
+        : null;
+
+    return res.render("savedLocations/myLocations", {
+      title: "My Saved Locations",
+      mySavedLocations,
+      selectedTag: tag || "",
+      hasFilter: tag !== undefined,
+      successMessage,
+    });
+  } catch (e) {
+    return handlePageError(e, res, "Saved Location");
+  }
+});
 
 router
   .route("/:savedLocationId")
