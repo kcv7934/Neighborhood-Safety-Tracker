@@ -1,5 +1,6 @@
 const createForm = document.getElementById("create-saved-location-form");
 const editForm = document.getElementById("edit-saved-location-form");
+const deleteButton = document.getElementById("delete-saved-location-button");
 
 const getSavedLocationFormData = (form) => {
   const label = form.elements.label.value.trim();
@@ -51,14 +52,14 @@ const getSavedLocationFormData = (form) => {
   };
 };
 
-const displayFormErrorMessage = (error, messageElement) => {
+const displayFormErrorMessage = (error, messageElement, providedMessage) => {
   if (error.response?.data?.error) {
     messageElement.textContent = error.response.data.error;
   } else if (typeof error === "string") {
     messageElement.textContent = error;
   } else {
     console.error(error);
-    messageElement.textContent = "Could not save location";
+    messageElement.textContent = providedMessage;
   }
 
   messageElement.hidden = false;
@@ -81,7 +82,7 @@ const createSavedLocation = async (event) => {
 
     window.location.href = "/saved-locations/my-locations?created=true";
   } catch (error) {
-    displayFormErrorMessage(error, message);
+    displayFormErrorMessage(error, message, "Could not create saved location");
   }
 };
 
@@ -104,7 +105,30 @@ const editSavedLocation = async (event) => {
 
     window.location.href = `/saved-locations/${savedLocationId}?updated=true`;
   } catch (error) {
-    displayFormErrorMessage(error, message);
+    displayFormErrorMessage(error, message, "Could not update saved location");
+  }
+};
+
+const deleteSavedLocation = async () => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this saved location",
+  );
+
+  if (!confirmed) return;
+
+  const savedLocationId = deleteButton.value;
+
+  const message = document.getElementById("delete-message");
+
+  message.hidden = true;
+  message.textContent = "";
+
+  try {
+    await axios.delete(`/saved-locations/${savedLocationId}`);
+
+    window.location.href = "/saved-locations/my-locations?deleted=true";
+  } catch (error) {
+    displayFormErrorMessage(error, message, "Could not delete saved location");
   }
 };
 
@@ -114,4 +138,8 @@ if (createForm) {
 
 if (editForm) {
   editForm.addEventListener("submit", editSavedLocation);
+}
+
+if (deleteButton) {
+  deleteButton.addEventListener("click", deleteSavedLocation);
 }

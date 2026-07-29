@@ -31,6 +31,15 @@
 </p>
 
 <p>
-  <a href="/saved-locations/my-locations">Back to My Saved Locations</a>
+  <button
+    type="button"
+    id="delete-saved-location-button"
+    value="{{location._id}}"
+  >Delete Saved Location</button>
 </p>
 
+<div id="delete-message" role="alert" hidden></div>
+
+<p>
+  <a href="/saved-locations/my-locations">Back to My Saved Locations</a>
+</p>

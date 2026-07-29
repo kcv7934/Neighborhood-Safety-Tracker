@@ -140,6 +140,7 @@ router
         title: "Saved Location Details",
         location: savedLocation,
         successMessage,
+        partial: "saved_location_script",
       });
     } catch (e) {
       return handlePageError(e, res, "Saved Location");
