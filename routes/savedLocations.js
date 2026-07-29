@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as savedLocationData from "../data/savedLocations.js";
 import { handleApiError, handlePageError } from "./errorHandlers.js";
+import * as validation from "../data/validation.js";
 
 const router = Router();
 
@@ -45,6 +46,14 @@ router
       return handleApiError(e, res);
     }
   });
+
+router.get("/create", (req, res) => {
+  return res.render("savedLocations/create", {
+    title: "Save A Location",
+    boroughs: validation.validBoroughs,
+    partial: "saved_location_script",
+  });
+});
 
 router.get("/my-locations", async (req, res) => {
   try {
