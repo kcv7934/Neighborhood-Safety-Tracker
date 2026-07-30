@@ -125,6 +125,8 @@ router.get("/:savedLocationId/nearby-user-reports", async (req, res) => {
   try {
     const id = req.params.savedLocationId;
 
+    const { category, startDate, endDate } = req.query;
+
     const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
       id,
       TEMP_AUTHOR_ID,
@@ -133,6 +135,9 @@ router.get("/:savedLocationId/nearby-user-reports", async (req, res) => {
     const nearbyReports = await userReportData.getNearbyUserReports(
       savedLocation.latitude,
       savedLocation.longitude,
+      category,
+      startDate,
+      endDate,
     );
 
     return res.status(200).json(nearbyReports);
@@ -163,6 +168,7 @@ router
       return res.render("savedLocations/locationDetails", {
         title: "Saved Location Details",
         location: savedLocation,
+        categories: validation.validCategories,
         successMessage,
         leaflet: true,
         stylesheet: "savedLocationMap.css",

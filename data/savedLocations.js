@@ -139,28 +139,51 @@ export const getSavedLocationByIdForUser = async (id, currentUserId) => {
 };
 
 export const updateSavedLocation = async (id, currentUserId, updates) => {
+  // validate location id, current user id, and updates fields
   id = validation.validateId(id, "savedLocationId");
 
   currentUserId = validation.validateId(currentUserId, "currentUserId");
 
   updates = validation.validateUpdateSavedLocation(updates);
 
-  await getSavedLocationByIdForUser(id, currentUserId);
+  // make sure the location exists and belongs to current user
+  const savedLocation = await getSavedLocationByIdForUser(id, currentUserId);
 
-  const updateAddress = Object.hasOwn(updates, "address");
-  const updateBorough = Object.hasOwn(updates, "borough");
+  const hasAddress = Object.hasOwn(updates, "address");
+  const hasBorough = Object.hasOwn(updates, "borough");
 
-  if (updateAddress !== updateBorough) {
+  // address and borough are required to geocode a location so make sure they are supplied
+  if (hasAddress !== hasBorough) {
     throw "Address and borough must be provided together";
   }
+
+  // Extract the current street and borough from the formatted complete address stored in DB
+  // Ex: "11 Wall Street, MANHATTEN, 11111" => "11 Wall Street" and "MANHATTEN"
+  const currentAddressParts = savedLocation.address.split(",");
+
+  const currentStreetAddress = currentAddressParts[0].trim();
+
+  const currentBorough = currentAddressParts[1].trim();
+
+  // Check to see if supplied address or borough actually changed from original
+  const addressChanged =
+    hasAddress &&
+    updates.address.toLowerCase() !== currentStreetAddress.toLowerCase();
+  const boroughChanged = hasBorough && updates.borough !== currentBorough;
 
   const preparedUpdates = { ...updates };
 
   const savedLocationsCollection = await savedLocations();
 
-  if (updateAddress && updateBorough) {
-    const location = await geocodeAddress(updates.address, updates.borough);
+  // only geocode address if either the street or borough changed
+  if (addressChanged || boroughChanged) {
+    const address = addressChanged ? updates.address : currentStreetAddress;
+    const borough = boroughChanged ? updates.borough : currentBorough;
 
+    const location = await geocodeAddress(address, borough);
+
+    // get the user's other saved locations if exist while excluding current location
+    // being updated
     const otherSavedLocations = await savedLocationsCollection
       .find({
         _id: {
@@ -172,20 +195,35 @@ export const updateSavedLocation = async (id, currentUserId, updates) => {
 
     const cleanedUpdatedAddress = cleanAddressForCompare(location.address);
 
-    const existingLocation = otherSavedLocations.find((savedLocation) => {
-      const cleanedSavedAddress = cleanAddressForCompare(savedLocation.address);
+    // Check whether the user has another location that has the same street and borough
+    // to prevent updating a new saved location to the same address
+    const existingLocation = otherSavedLocations.find((otherSavedLocation) => {
+      const cleanedSavedAddress = cleanAddressForCompare(
+        otherSavedLocation.address,
+      );
 
       return cleanedSavedAddress === cleanedUpdatedAddress;
     });
 
     if (existingLocation) throw "You already saved this location";
 
+    // Store the complete address and coordinates returned by geocoding for new address supplied
     preparedUpdates.address = location.address;
     preparedUpdates.latitude = location.latitude;
     preparedUpdates.longitude = location.longitude;
+  } else {
+    // address is unchanged so remove it from query for $set
+    delete preparedUpdates.address;
   }
 
+  // remove the borough since its only used for geocoding and not stored in DB
   delete preparedUpdates.borough;
+
+  // if all submitted values where removed, then you have the same original savedLocation
+  // so just return the original
+  if (Object.keys(preparedUpdates).length === 0) {
+    return savedLocation;
+  }
 
   const updatedSavedLocation = await savedLocationsCollection.findOneAndUpdate(
     {

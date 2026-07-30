@@ -149,6 +149,9 @@ export const updateUserReport = async (id, currentUserId, updates) => {
     updates.borough = borough;
     updates.latitude = location.latitude;
     updates.longitude = location.longitude;
+  } else {
+    delete updates.address;
+    delete updates.borough;
   }
 
   updates.updatedAt = new Date();
@@ -188,11 +191,63 @@ export const getUserReportsByAuthor = async (authorId) => {
   return reports;
 };
 
-export const getNearbyUserReports = async (latitude, longitude) => {
+export const getNearbyUserReports = async (
+  latitude,
+  longitude,
+  category,
+  startDate,
+  endDate,
+) => {
   latitude = validation.validateLatitude(latitude);
   longitude = validation.validateLongitude(longitude);
 
-  const reportCandidates = await getAllUserReports();
+  let validatedCategory = null;
+  let validatedStartDateValue = null;
+  let validatedEndDateValue = null;
+
+  if (category !== undefined && category !== "") {
+    validatedCategory = validation.validateCategory(category);
+  }
+
+  if (startDate !== undefined && startDate !== "") {
+    validatedStartDateValue = validation.validateDate(startDate, "startDate");
+  }
+
+  if (endDate !== undefined && endDate !== "") {
+    validatedEndDateValue = validation.validateDate(endDate, "endDate");
+
+    // set end date to end of that day
+    validatedEndDateValue.setUTCHours(23, 59, 59, 999);
+  }
+
+  if (
+    validatedStartDateValue !== null &&
+    validatedEndDateValue !== null &&
+    validatedStartDateValue > validatedEndDateValue
+  ) {
+    throw "Start date cannot be after end date";
+  }
+
+  const query = {
+    status: "visible",
+  };
+
+  if (validatedCategory !== null) query.category = validatedCategory;
+
+  if (validatedStartDateValue !== null || validatedEndDateValue !== null) {
+    query.createdAt = {};
+
+    if (validatedStartDateValue !== null) {
+      query.createdAt.$gte = validatedStartDateValue;
+    }
+    if (validatedEndDateValue !== null) {
+      query.createdAt.$lte = validatedEndDateValue;
+    }
+  }
+
+  const userReportsCollection = await userReports();
+
+  const reportCandidates = await userReportsCollection.find(query).toArray();
 
   const reportsWithDistance = reportCandidates.map((report) => {
     const distanceInMiles = findDistanceBetweenInMiles(
@@ -204,6 +259,8 @@ export const getNearbyUserReports = async (latitude, longitude) => {
 
     return {
       ...report,
+      _id: report._id.toString(),
+      authorId: report.authorId.toString(),
       distanceInMiles,
     };
   });

@@ -27,6 +27,31 @@
 </article>
 
 <section>
+  <h1>Filter Nearby User</h1>
+
+  <form id="nearby-report-filter-form">
+    <label for="report-category-fitler">Category</label>
+    <select id="report-category-filter" name="category">
+      <option value="">All categories</option>
+
+      {{#each categories}}
+        <option value="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+
+    <label for="report-start-date-filter">Start Date</label>
+    <input type="date" id="report-start-date-filter" name="startDate" />
+
+    <label for="report-end-date-filter">End Date</label>
+    <input type="date" id="report-end-date-filter" name="endDate" />
+
+    <button type="submit">Apply Filters</button>
+
+    <button type="button" id="clear-report-filters">Clear Filters</button>
+  </form>
+</section>
+
+<section>
   <h2>Map</h2>
 
   <div

@@ -32,6 +32,30 @@ export const validateLongitude = (longitude) => {
   return validateNumber(longitude, "longitude", -180, 180);
 };
 
+export const validateDate = (dateStr, dateName = "date") => {
+  dateStr = validateString(dateStr, dateName);
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    throw `${dateName} must use the format YYYY-MM-DD`;
+  }
+
+  const date = new Date(`${dateStr}T00:00:00.000Z`);
+
+  const timestamp = date.getTime();
+
+  if (Number.isNaN(timestamp)) {
+    throw `${dateName} must be a valid date`;
+  }
+
+  const preparedDateStr = date.toISOString().slice(0, 10);
+
+  if (preparedDateStr !== dateStr) {
+    throw `${dateName} must be a valid date`;
+  }
+
+  return date;
+};
+
 export const validateId = (id, idName = "id") => {
   id = validateString(id, idName);
 
