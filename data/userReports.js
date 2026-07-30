@@ -3,6 +3,7 @@ import { userReports } from "../config/mongoCollections.js";
 import * as validation from "./validation.js";
 import { geocodeAddress } from "./geocoding.js";
 import { NotFoundError, ForbiddenError } from "./error.js";
+import { findDistanceBetweenInMiles } from "./locationUtils.js";
 
 export const createUserReport = async (
   authorId,
@@ -89,7 +90,7 @@ export const getUserReportById = async (id, includeHidden = false) => {
 };
 
 export const getUserReportByIdForAuthor = async (id, currentUserId) => {
-  currentUserId = validation.validateId(currentUserId, "curentUserId");
+  currentUserId = validation.validateId(currentUserId, "currentUserId");
   const userReport = await getUserReportById(id);
   if (userReport.authorId !== currentUserId) {
     throw new ForbiddenError("You cannot access another user's report");
@@ -128,13 +129,18 @@ export const updateUserReport = async (id, currentUserId, updates) => {
 
   const userReport = await getUserReportByIdForAuthor(id, currentUserId);
 
+  const currentStreetAddress = userReport.address.split(",")[0].trim();
+
   const addressChanged =
-    Object.hasOwn(updates, "address") && updates.address !== userReport.address;
+    Object.hasOwn(updates, "address") &&
+    updates.address.toLowerCase() !== currentStreetAddress.toLowerCase();
+
   const boroughChanged =
     Object.hasOwn(updates, "borough") && updates.borough !== userReport.borough;
 
   if (addressChanged || boroughChanged) {
-    const address = addressChanged ? updates.address : userReport.address;
+    const address = addressChanged ? updates.address : currentStreetAddress;
+
     const borough = boroughChanged ? updates.borough : userReport.borough;
 
     const location = await geocodeAddress(address, borough);
@@ -180,4 +186,35 @@ export const getUserReportsByAuthor = async (authorId) => {
     return report;
   });
   return reports;
+};
+
+export const getNearbyUserReports = async (latitude, longitude) => {
+  latitude = validation.validateLatitude(latitude);
+  longitude = validation.validateLongitude(longitude);
+
+  const reportCandidates = await getAllUserReports();
+
+  const reportsWithDistance = reportCandidates.map((report) => {
+    const distanceInMiles = findDistanceBetweenInMiles(
+      latitude,
+      longitude,
+      report.latitude,
+      report.longitude,
+    );
+
+    return {
+      ...report,
+      distanceInMiles,
+    };
+  });
+
+  const nearbyReports = reportsWithDistance.filter((report) => {
+    return report.distanceInMiles <= 1;
+  });
+
+  nearbyReports.sort((a, b) => {
+    return a.distanceInMiles - b.distanceInMiles;
+  });
+
+  return nearbyReports;
 };

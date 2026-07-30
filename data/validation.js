@@ -24,6 +24,14 @@ export const validateNumber = (val, valName, min, max) => {
   return val;
 };
 
+export const validateLatitude = (latitude) => {
+  return validateNumber(latitude, "latitude", -90, 90);
+};
+
+export const validateLongitude = (longitude) => {
+  return validateNumber(longitude, "longitude", -180, 180);
+};
+
 export const validateId = (id, idName = "id") => {
   id = validateString(id, idName);
 
