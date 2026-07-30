@@ -31,10 +31,13 @@
 
   <div
     id="saved-location-map"
+    data-saved-location-id="{{location._id}}"
     data-latitude="{{location.latitude}}"
     data-longitude="{{location.longitude}}"
     data-label="{{location.label}}"
   ></div>
+
+  <p id="map-message" role="alert" hidden></p>
 </section>
 
 <p>

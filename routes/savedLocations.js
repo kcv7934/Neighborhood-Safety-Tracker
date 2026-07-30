@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as savedLocationData from "../data/savedLocations.js";
 import { handleApiError, handlePageError } from "./errorHandlers.js";
 import * as validation from "../data/validation.js";
+import * as userReportData from "../data/userReports.js";
 
 const router = Router();
 
@@ -64,13 +65,10 @@ router.get("/my-locations", async (req, res) => {
       tag,
     );
 
-    let successMessage = null;
-
-    if (req.query.created === "true") {
-      successMessage = "Saved location created successfully";
-    } else if (req.query.deleted === "true") {
-      successMessage = "Saved location deleted successfulyl";
-    }
+    const successMessage =
+      req.query.deleted === "true"
+        ? "Saved location deleted successfully"
+        : null;
 
     return res.render("savedLocations/myLocations", {
       title: "My Saved Locations",
@@ -120,6 +118,26 @@ router.get("/:savedLocationId/edit", async (req, res) => {
   }
 });
 
+router.get("/:savedLocationId/nearby-user-reports", async (req, res) => {
+  try {
+    const id = req.params.savedLocationId;
+
+    const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
+      id,
+      TEMP_AUTHOR_ID,
+    );
+
+    const nearbyReports = await userReportData.getNearbyUserReports(
+      savedLocation.latitude,
+      savedLocation.longitude,
+    );
+
+    return res.status(200).json(nearbyReports);
+  } catch (e) {
+    return handleApiError(e, res);
+  }
+});
+
 router
   .route("/:savedLocationId")
   .get(async (req, res) => {
@@ -131,10 +149,13 @@ router
         TEMP_AUTHOR_ID,
       );
 
-      const successMessage =
-        req.query.updated === "true"
-          ? "Saved location updated successfully"
-          : null;
+      let successMessage = null;
+
+      if (req.query.created === "true") {
+        successMessage = "Saved location created successfully";
+      } else if (req.query.updated === "true") {
+        successMessage = "Saved location updated successfully";
+      }
 
       return res.render("savedLocations/locationDetails", {
         title: "Saved Location Details",

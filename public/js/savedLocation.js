@@ -78,9 +78,11 @@ const createSavedLocation = async (event) => {
   try {
     const savedLocationData = getSavedLocationFormData(form);
 
-    await axios.post("/saved-locations", savedLocationData);
+    const response = await axios.post("/saved-locations", savedLocationData);
 
-    window.location.href = "/saved-locations/my-locations?created=true";
+    const savedLocationId = response.data._id;
+
+    window.location.href = `/saved-locations/${savedLocationId}?created=true`;
   } catch (error) {
     displayFormErrorMessage(error, message, "Could not create saved location");
   }

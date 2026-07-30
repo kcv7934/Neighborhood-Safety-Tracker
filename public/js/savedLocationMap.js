@@ -1,6 +1,61 @@
 const mapElement = document.getElementById("saved-location-map");
 
+const createUserReportPopup = (report, savedLocationId) => {
+  const popup = document.createElement("div");
+
+  const category = document.createElement("strong");
+  category.textContent = report.category;
+
+  const source = document.createElement("p");
+  source.textContent = "User Generated Report";
+
+  const distance = document.createElement("p");
+  distance.textContent = `${report.distanceInMiles.toFixed(2)} miles away`;
+
+  const detailsLink = document.createElement("a");
+  detailsLink.href = `/user-reports/${report._id}?savedLocationId=${savedLocationId}`;
+  detailsLink.textContent = "View Report";
+
+  popup.append(category, source, distance, detailsLink);
+
+  return popup;
+};
+
+const loadNearbyUserReports = async (map, savedLocationId) => {
+  const message = document.getElementById("map-message");
+
+  try {
+    const response = await axios.get(
+      `/saved-locations/${savedLocationId}/nearby-user-reports`,
+    );
+
+    const nearbyReports = response.data;
+
+    for (const report of nearbyReports) {
+      const reportCoords = [report.latitude, report.longitude];
+      const reportMarker = L.circleMarker(reportCoords, {
+        radius: 8,
+        color: "#2563eb",
+        fillColor: "#3b82f6",
+        fillOpacity: 0.85,
+      }).addTo(map);
+
+      const popup = createUserReportPopup(report, savedLocationId);
+
+      reportMarker.bindPopup(popup);
+    }
+  } catch (error) {
+    console.error(error);
+
+    if (message) {
+      message.textContent = "Nearby user reports could not be loaded";
+      message.hidden = false;
+    }
+  }
+};
+
 if (mapElement) {
+  const savedLocationId = mapElement.dataset.savedLocationId;
   const latitude = Number(mapElement.dataset.latitude);
   const longitude = Number(mapElement.dataset.longitude);
   const label = mapElement.dataset.label;
@@ -37,5 +92,7 @@ if (mapElement) {
     map.fitBounds(radius.getBounds(), {
       padding: [20, 20],
     });
+
+    loadNearbyUserReports(map, savedLocationId);
   }
 }

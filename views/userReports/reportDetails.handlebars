@@ -45,12 +45,21 @@
     <a href="/user-reports/{{report._id}}/edit">Edit Report</a>
   </p>
 
-  <button type="button" id="delete-user-report-button" value="{{report._id}}">Delete
-    Report</button>
+  <button
+    type="button"
+    id="delete-user-report-button"
+    value="{{report._id}}"
+  >Delete Report</button>
 
   <div id="delete-message" role="alert" hidden></div>
 {{/if}}
 
+{{#if returnSavedLocationId}}
+  <p>
+    <a href="/saved-locations/{{returnSavedLocationId}}">Back to Saved Location
+      Map</a>
+  </p>
+{{/if}}
 <p>
   <a href="/user-reports/my-reports">Back to My Reports</a>
 </p>

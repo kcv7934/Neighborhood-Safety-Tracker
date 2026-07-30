@@ -34,6 +34,15 @@ export const createSavedLocation = async (
 
   const savedLocationsCollection = await savedLocations();
 
+  const existingLocation = await savedLocationsCollection.findOne({
+    userId: new ObjectId(userId),
+    address: location.address,
+  });
+
+  if (existingLocation) {
+    throw "You have already saved this location";
+  }
+
   const insertedInfo =
     await savedLocationsCollection.insertOne(newSavedLocation);
 
