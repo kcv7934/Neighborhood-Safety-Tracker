@@ -26,6 +26,17 @@
   {{/if}}
 </article>
 
+<section>
+  <h2>Map</h2>
+
+  <div
+    id="saved-location-map"
+    data-latitude="{{location.latitude}}"
+    data-longitude="{{location.longitude}}"
+    data-label="{{location.label}}"
+  ></div>
+</section>
+
 <p>
   <a href="/saved-locations/{{location._id}}/edit">Edit Saved Location</a>
 </p>

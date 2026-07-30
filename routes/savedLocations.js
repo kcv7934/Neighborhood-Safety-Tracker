@@ -140,7 +140,9 @@ router
         title: "Saved Location Details",
         location: savedLocation,
         successMessage,
-        partial: "saved_location_script",
+        leaflet: true,
+        stylesheet: "savedLocationMap.css",
+        partial: "saved_location_map_script",
       });
     } catch (e) {
       return handlePageError(e, res, "Saved Location");
