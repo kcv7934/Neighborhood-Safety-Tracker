@@ -19,3 +19,37 @@ export const handleApiError = (e, res) => {
     error: "Internal server error",
   });
 };
+
+export const handlePageError = (e, res, dataName = "Resource") => {
+  if (e instanceof NotFoundError) {
+    return res.status(404).render("error", {
+      title: `${dataName} Not Found`,
+      statusCode: 404,
+      error: e.message,
+    });
+  }
+
+  if (e instanceof ForbiddenError) {
+    return res.status(403).render("error", {
+      title: "Forbidden",
+      statusCode: 403,
+      error: e.message,
+    });
+  }
+
+  if (typeof e === "string") {
+    return res.status(400).render("error", {
+      title: `Invalid ${dataName}`,
+      statusCode: 400,
+      error: e,
+    });
+  }
+
+  console.error(e);
+
+  return res.status(500).render("error", {
+    title: "Server Error",
+    statusCode: 500,
+    error: "Internal server error",
+  });
+};

@@ -1,46 +1,11 @@
 import { Router } from "express";
 import * as userReportData from "../data/userReports.js";
-import { NotFoundError, ForbiddenError } from "../data/error.js";
 import * as validation from "../data/validation.js";
-import { handleApiError } from "./errorHandlers.js";
+import { handleApiError, handlePageError } from "./errorHandlers.js";
 
 const router = Router();
 
 const TEMP_AUTHOR_ID = "687000000000000000000001";
-
-const handlePageError = (e, res) => {
-  if (e instanceof NotFoundError) {
-    return res.status(404).render("error", {
-      title: "Report Not Found",
-      statusCode: 404,
-      error: e.message,
-    });
-  }
-
-  if (e instanceof ForbiddenError) {
-    return res.status(403).render("error", {
-      title: "Forbidden",
-      statusCode: 403,
-      error: e.message,
-    });
-  }
-
-  if (typeof e === "string") {
-    return res.status(400).render("error", {
-      title: "Invalid Report",
-      statusCode: 400,
-      error: e,
-    });
-  }
-
-  console.error(e);
-
-  return res.status(500).render("error", {
-    title: "Server Error",
-    statusCode: 500,
-    error: "Internal server error",
-  });
-};
 
 router
   .route("/")
@@ -103,7 +68,7 @@ router.get("/my-reports", async (req, res) => {
       successMessage,
     });
   } catch (e) {
-    return handlePageError(e, res);
+    return handlePageError(e, res, "Report");
   }
 });
 
@@ -142,7 +107,7 @@ router.get("/:userReportId/edit", async (req, res) => {
       partial: "user_report_script",
     });
   } catch (e) {
-    return handlePageError(e, res);
+    return handlePageError(e, res, "Report");
   }
 });
 
@@ -176,7 +141,7 @@ router
         partial: "user_report_script",
       });
     } catch (e) {
-      return handlePageError(e, res);
+      return handlePageError(e, res, "Report");
     }
   })
   .patch(async (req, res) => {

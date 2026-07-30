@@ -1,0 +1,47 @@
+<h1>Edit Saved Location</h1>
+
+<form id="edit-saved-location-form">
+  <input type="hidden" name="savedLocationId" value="{{location._id}}" />
+
+  <label for="label">Label</label>
+  <input
+    type="text"
+    id="label"
+    name="label"
+    value="{{location.label}}"
+    maxlength="50"
+    required
+  />
+
+  <label for="address">Address</label>
+  <input
+    type="text"
+    id="address"
+    name="address"
+    value="{{location.address}}"
+    maxlength="50"
+    required
+  />
+
+  <label for="borough">Borough</label>
+  <select id="borough" name="borough" required>
+    <option value="">Select a borough</option>
+
+    {{#each boroughs}}
+      <option value="{{value}}" {{#if selected}} selected {{/if}}>
+        {{value}}
+      </option>
+    {{/each}}
+  </select>
+
+  <label for="tags">Tags</label>
+  <input type="text" id="tags" name="tags" value="{{location.tagsStr}}" />
+
+  <p>Optional. Separate tags with commas i.e. Home, Family, Downtown</p>
+
+  <button type="submit">Save Changes</button>
+
+  <a href="/saved-locations/{{location._id}}">Cancel</a>
+
+  <div id="form-message" role="alert" hidden></div>
+</form>

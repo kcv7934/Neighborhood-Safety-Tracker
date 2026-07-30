@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as savedLocationData from "../data/savedLocations.js";
-import { NotFoundError, ForbiddenError } from "../data/error.js";
-import { handleApiError } from "./errorHandlers.js";
+import { handleApiError, handlePageError } from "./errorHandlers.js";
+import * as validation from "../data/validation.js";
 
 const router = Router();
 
@@ -13,8 +13,10 @@ router
     try {
       const tag = req.query.tag;
 
-      const savedLocationList =
-        await savedLocationData.getSavedLocationsByUser(TEMP_AUTHOR_ID, tag);
+      const savedLocationList = await savedLocationData.getSavedLocationsByUser(
+        TEMP_AUTHOR_ID,
+        tag,
+      );
 
       return res.status(200).json(savedLocationList);
     } catch (e) {
@@ -45,6 +47,79 @@ router
     }
   });
 
+router.get("/create", (req, res) => {
+  return res.render("savedLocations/create", {
+    title: "Save a Location",
+    boroughs: validation.validBoroughs,
+    partial: "saved_location_script",
+  });
+});
+
+router.get("/my-locations", async (req, res) => {
+  try {
+    const tag = req.query.tag;
+
+    const mySavedLocations = await savedLocationData.getSavedLocationsByUser(
+      TEMP_AUTHOR_ID,
+      tag,
+    );
+
+    let successMessage = null;
+
+    if (req.query.created === "true") {
+      successMessage = "Saved location created successfully";
+    } else if (req.query.deleted === "true") {
+      successMessage = "Saved location deleted successfulyl";
+    }
+
+    return res.render("savedLocations/myLocations", {
+      title: "My Saved Locations",
+      mySavedLocations,
+      selectedTag: tag || "",
+      hasFilter: tag !== undefined,
+      successMessage,
+    });
+  } catch (e) {
+    return handlePageError(e, res, "Saved Location");
+  }
+});
+
+router.get("/:savedLocationId/edit", async (req, res) => {
+  try {
+    const id = req.params.savedLocationId;
+
+    const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
+      id,
+      TEMP_AUTHOR_ID,
+    );
+
+    const currentBorough = validation.validBoroughs.find((borough) => {
+      return savedLocation.address.includes(`, ${borough},`);
+    });
+
+    const boroughs = validation.validBoroughs.map((borough) => {
+      return {
+        value: borough,
+        selected: borough === currentBorough,
+      };
+    });
+
+    const preparedLocation = {
+      ...savedLocation,
+      tagsStr: savedLocation.tags.join(", "),
+    };
+
+    return res.render("savedLocations/edit", {
+      title: "Edit Saved Location",
+      location: preparedLocation,
+      boroughs,
+      partial: "saved_location_script",
+    });
+  } catch (e) {
+    return handlePageError(e, res, "Saved Location");
+  }
+});
+
 router
   .route("/:savedLocationId")
   .get(async (req, res) => {
@@ -56,9 +131,19 @@ router
         TEMP_AUTHOR_ID,
       );
 
-      return res.status(200).json(savedLocation);
+      const successMessage =
+        req.query.updated === "true"
+          ? "Saved location updated successfully"
+          : null;
+
+      return res.render("savedLocations/locationDetails", {
+        title: "Saved Location Details",
+        location: savedLocation,
+        successMessage,
+        partial: "saved_location_script",
+      });
     } catch (e) {
-      return handleApiError(e, res);
+      return handlePageError(e, res, "Saved Location");
     }
   })
   .patch(async (req, res) => {

@@ -1,0 +1,58 @@
+<h1>My Saved Locations</h1>
+
+{{#if successMessage}}
+  <p>{{successMessage}}</p>
+{{/if}}
+
+<p>
+  <a href="/saved-locations/create">Save a New Location</a>
+</p>
+
+<form method="GET" action="/saved-locations/my-locations">
+  <label for="tag-filter">Filter by tag</label>
+  <input
+    type="text"
+    id="tag-filter"
+    name="tag"
+    value="{{selectedTag}}"
+    maxLength="25"
+    required
+  />
+
+  <button type="submit">Filter</button>
+
+  <a href="/saved-locations/my-locations">Clear Filter</a>
+</form>
+
+{{#if mySavedLocations.length}}
+  {{#each mySavedLocations}}
+    <article>
+      <h2>{{label}}</h2>
+
+      <p>Address: {{address}}</p>
+
+      {{#if tags.length}}
+        <p>Tags:</p>
+        <ul>
+          {{#each tags}}
+            <li>{{this}}</li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p>No tags</p>
+      {{/if}}
+
+      <p>
+        <a href="/saved-locations/{{_id}}">View Location</a>
+      </p>
+    </article>
+  {{/each}}
+{{else}}
+  {{#if hasFilter}}
+    <p>
+      No saved locations were found with the tag "{{selectedTag}}".
+    </p>
+  {{else}}
+    <p>You have not saved any locations yet.</p>
+  {{/if}}
+{{/if}}
