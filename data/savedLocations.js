@@ -4,6 +4,20 @@ import * as validation from "./validation.js";
 import { geocodeAddress } from "./geocoding.js";
 import { NotFoundError, ForbiddenError } from "./error.js";
 
+const cleanAddressForCompare = (address) => {
+  const addressParts = address.split(",");
+
+  const streetAndBoroughParts = addressParts.slice(0, 2);
+
+  const cleanedParts = streetAndBoroughParts.map((addressPart) => {
+    return addressPart.trim().toLowerCase();
+  });
+
+  const cleanedAddress = cleanedParts.join(",");
+
+  return cleanedAddress;
+};
+
 export const createSavedLocation = async (
   userId,
   label,
@@ -34,9 +48,16 @@ export const createSavedLocation = async (
 
   const savedLocationsCollection = await savedLocations();
 
-  const existingLocation = await savedLocationsCollection.findOne({
-    userId: new ObjectId(userId),
-    address: location.address,
+  const userSavedLocations = await savedLocationsCollection
+    .find({
+      userId: new ObjectId(userId),
+    })
+    .toArray();
+
+  const cleanedNewAddress = cleanAddressForCompare(location.address);
+  const existingLocation = userSavedLocations.find((savedLocation) => {
+    const cleanedSavedAddress = cleanAddressForCompare(savedLocation.address);
+    return cleanedSavedAddress === cleanedNewAddress;
   });
 
   if (existingLocation) {
@@ -135,8 +156,29 @@ export const updateSavedLocation = async (id, currentUserId, updates) => {
 
   const preparedUpdates = { ...updates };
 
+  const savedLocationsCollection = await savedLocations();
+
   if (updateAddress && updateBorough) {
     const location = await geocodeAddress(updates.address, updates.borough);
+
+    const otherSavedLocations = await savedLocationsCollection
+      .find({
+        _id: {
+          $ne: new ObjectId(id),
+        },
+        userId: new ObjectId(currentUserId),
+      })
+      .toArray();
+
+    const cleanedUpdatedAddress = cleanAddressForCompare(location.address);
+
+    const existingLocation = otherSavedLocations.find((savedLocation) => {
+      const cleanedSavedAddress = cleanAddressForCompare(savedLocation.address);
+
+      return cleanedSavedAddress === cleanedUpdatedAddress;
+    });
+
+    if (existingLocation) throw "You already saved this location";
 
     preparedUpdates.address = location.address;
     preparedUpdates.latitude = location.latitude;
@@ -144,8 +186,6 @@ export const updateSavedLocation = async (id, currentUserId, updates) => {
   }
 
   delete preparedUpdates.borough;
-
-  const savedLocationsCollection = await savedLocations();
 
   const updatedSavedLocation = await savedLocationsCollection.findOneAndUpdate(
     {

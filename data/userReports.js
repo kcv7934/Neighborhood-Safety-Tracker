@@ -129,13 +129,18 @@ export const updateUserReport = async (id, currentUserId, updates) => {
 
   const userReport = await getUserReportByIdForAuthor(id, currentUserId);
 
+  const currentStreetAddress = userReport.address.split(",")[0].trim();
+
   const addressChanged =
-    Object.hasOwn(updates, "address") && updates.address !== userReport.address;
+    Object.hasOwn(updates, "address") &&
+    updates.address.toLowerCase() !== currentStreetAddress.toLowerCase();
+
   const boroughChanged =
     Object.hasOwn(updates, "borough") && updates.borough !== userReport.borough;
 
   if (addressChanged || boroughChanged) {
-    const address = addressChanged ? updates.address : userReport.address;
+    const address = addressChanged ? updates.address : currentStreetAddress;
+
     const borough = boroughChanged ? updates.borough : userReport.borough;
 
     const location = await geocodeAddress(address, borough);

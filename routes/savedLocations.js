@@ -102,8 +102,11 @@ router.get("/:savedLocationId/edit", async (req, res) => {
       };
     });
 
+    const streetAddress = savedLocation.address.split(",")[0].trim();
+
     const preparedLocation = {
       ...savedLocation,
+      streetAddress,
       tagsStr: savedLocation.tags.join(", "),
     };
 
