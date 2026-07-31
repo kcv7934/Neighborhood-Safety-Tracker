@@ -1,37 +1,47 @@
 <h1> Create User Report </h1>
 
-<form id="create-user-report-form">
-  <label for="category">Category</label>
-  <select id="category" name="category" required>
-    <option value="">Select a category</option>
-    {{#each categories}}
-      <option value="{{this}}">{{this}}</option>
-    {{/each}}
-  </select>
+<form id="create-user-report-form" class="page-form">
+  <div class="form-field">
+    <label for="category">Category</label>
+    <select id="category" name="category" required>
+      <option value="">Select a category</option>
+      {{#each categories}}
+        <option value="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+  </div>
 
-  <label for="address">Address</label>
-  <input type="text" id="address" name="address" maxlength="50" required />
+  <div class="form-field">
+    <label for="address">Address</label>
+    <input type="text" id="address" name="address" maxlength="50" required />
+  </div>
 
-  <label for="borough">Borough</label>
-  <select id="borough" name="borough" required>
-    <option value="">Select a borough</option>
-    {{#each boroughs}}
-      <option value="{{this}}">{{this}}</option>
-    {{/each}}
-  </select>
+  <div class="form-field">
+    <label for="borough">Borough</label>
+    <select id="borough" name="borough" required>
+      <option value="">Select a borough</option>
+      {{#each boroughs}}
+        <option value="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+  </div>
 
-  <label for="description">Description</label>
-  <textarea
-    id="description"
-    name="description"
-    minlength="10"
-    maxlength="500"
-    required
-  ></textarea>
+  <div class="form-field">
+    <label for="description">Description</label>
+    <textarea
+      id="description"
+      name="description"
+      minlength="10"
+      maxlength="500"
+      required
+    ></textarea>
+  </div>
 
-  <button type="submit">Submit Report</button>
+  <div class="form-actions">
+    <button type="submit">Submit Report</button>
 
-  <a href="/user-reports/my-reports">Back to My Reports</a>
+    <a href="/user-reports/my-reports">Back to My Reports</a>
+  </div>
 
-  <div id="form-message" role="alert"></div>
+  <div id="form-message" class="form-message" role="alert" hidden></div>
 </form>

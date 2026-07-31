@@ -49,6 +49,7 @@ router.get("/create", (req, res) => {
     categories: validation.validCategories,
     boroughs: validation.validBoroughs,
     partial: "user_report_script",
+    stylesheet: "userReports.css",
   });
 });
 
@@ -66,6 +67,7 @@ router.get("/my-reports", async (req, res) => {
       title: "My Reports",
       reports,
       successMessage,
+      stylesheet: "userReports.css",
     });
   } catch (e) {
     return handlePageError(e, res, "Report");
@@ -112,6 +114,7 @@ router.get("/:userReportId/edit", async (req, res) => {
       categories,
       boroughs,
       partial: "user_report_script",
+      stylesheet: "userReports.css",
     });
   } catch (e) {
     return handlePageError(e, res, "Report");
@@ -156,6 +159,7 @@ router
         successMessage,
         returnSavedLocationId,
         partial: "user_report_script",
+        stylesheet: "userReports.css",
       });
     } catch (e) {
       return handlePageError(e, res, "Report");
