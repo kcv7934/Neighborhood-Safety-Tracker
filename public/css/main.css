@@ -68,8 +68,7 @@ a {
 
 .dashboard-header,
 .dashboard-overview,
-.dashboard-locations,
-.dashboard-actions {
+.dashboard-locations {
   margin-bottom: 35px;
 }
 
@@ -92,10 +91,6 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.dashboard-actions {
-  display: inline-block;
 }
 
 input,
