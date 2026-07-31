@@ -20,7 +20,42 @@
     {{/if}}
   </head>
   <body>
-    {{{body}}}
+
+    <div class="app-layout">
+      <aside class="sidebar">
+        <div class="sidebar-title">
+          <a href="/">Neighborhood Safety Tracker</a>
+        </div>
+
+        <nav>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="/">Dashboard</a>
+            </li>
+
+            <li>
+              <a href="/saved-locations/my-locations">Saved Locations</a>
+            </li>
+
+            <li>
+              <a href="/saved-locations/create">Save a Location</a>
+            </li>
+
+            <li>
+              <a href="/user-reports/my-reports">My Reports</a>
+            </li>
+
+            <li>
+              <a href="/user-reports/create">Create a Report</a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <div class="app-content">
+        {{{body}}}
+      </div>
+    </div>
 
     {{#if partial}}
       {{> (lookup . "partial")}}
