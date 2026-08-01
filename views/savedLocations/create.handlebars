@@ -1,32 +1,40 @@
 <h1>Save a Location</h1>
 
-<form id="create-saved-location-form">
-  <label for="label">Label</label>
-  <input type="text" id="label" name="label" maxlength="50" required />
+<form id="create-saved-location-form" class="page-form">
+  <div class="form-field">
+    <label for="label">Label</label>
+    <input type="text" id="label" name="label" maxlength="50" required />
+  </div>
 
-  <label for="address">Address</label>
-  <input type="text" id="address" name="address" maxlength="50" required />
+  <div class="form-field">
+    <label for="address">Address</label>
+    <input type="text" id="address" name="address" maxlength="50" required />
+  </div>
 
-  <label for="borough">Borough</label>
-  <select id="borough" name="borough" required>
-    <option value="">Select a borough</option>
+  <div class="form-field">
+    <label for="borough">Borough</label>
+    <select id="borough" name="borough" required>
+      <option value="">Select a borough</option>
 
-    {{#each boroughs}}
-      <option value="{{this}}">{{this}}</option>
-    {{/each}}
-  </select>
+      {{#each boroughs}}
+        <option value="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+  </div>
 
-  <label for="tags">Tags</label>
-  <input type="text" id="tags" name="tags" />
+  <div class="form-field">
+    <label for="tags">Tags</label>
+    <input type="text" id="tags" name="tags" />
 
-  <p id="tags-help">
-    Optional. Separate tags with commas, i.e. Home, Family, Downtown
-  </p>
+    <p id="tags-help" class="form-help">
+      Optional. Separate tags with commas, i.e. Home, Family, Downtown
+    </p>
+  </div>
 
-  <button type="submit">Save Location</button>
-  <button type="reset">Clear Form</button>
+  <div class="form-actions">
+    <button type="submit">Save Location</button>
+    <a href="/saved-locations/my-locations">Back to My Saved Locations</a>
+  </div>
 
-  <a href="/saved-locations/my-locations">Back to My Saved Locations</a>
-
-  <div id="form-message" role="alert" hidden></div>
+  <div id="form-message" class="form-message" role="alert" hidden></div>
 </form>

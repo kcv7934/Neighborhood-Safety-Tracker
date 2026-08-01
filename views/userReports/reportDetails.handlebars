@@ -1,65 +1,65 @@
 <h1>User Report Details</h1>
 
 {{#if successMessage}}
-  <p role="status">
+  <p class="status-message" role="status">
     {{successMessage}}
   </p>
 {{/if}}
 
-<article>
+<article class="report-details">
   <h2>{{report.category}}</h2>
 
   <p>
-    Address:
+    <strong>Address:</strong>
     {{report.address}}
   </p>
 
   <p>
-    Borough:
+    <strong>Borough:</strong>
     {{report.borough}}
   </p>
 
   <p>
-    Description:
+    <strong>Description:</strong>
     {{report.description}}
   </p>
 
   <p>
-    Status:
+    <strong>Status:</strong>
     {{report.status}}
   </p>
 
   <p>
-    Created:
+    <strong>Created:</strong>
     {{report.createdAt}}
   </p>
 
   <p>
-    Last Updated:
+    <strong>Last Updated:</strong>
     {{report.updatedAt}}
   </p>
 </article>
 
-{{#if isOwner}}
-  <p>
-    <a href="/user-reports/{{report._id}}/edit">Edit Report</a>
-  </p>
+<div class="page-actions">
+  {{#if isOwner}}
+    <a class="button-link" href="/user-reports/{{report._id}}/edit">Edit Report</a>
 
-  <button
-    type="button"
-    id="delete-user-report-button"
-    value="{{report._id}}"
-  >Delete Report</button>
+    <button
+      type="button"
+      class="delete-button"
+      id="delete-user-report-button"
+      value="{{report._id}}"
+    >Delete Report</button>
+  {{/if}}
 
-  <div id="delete-message" role="alert" hidden></div>
-{{/if}}
+  {{#if returnSavedLocationId}}
+    <a href="/saved-locations/{{returnSavedLocationId}}">Back to Saved Location Map</a>
+  {{/if}}
 
-{{#if returnSavedLocationId}}
-  <p>
-    <a href="/saved-locations/{{returnSavedLocationId}}">Back to Saved Location
-      Map</a>
-  </p>
-{{/if}}
-<p>
   <a href="/user-reports/my-reports">Back to My Reports</a>
-</p>
+</div>
+
+{{#if isOwner}}
+  <div id="delete-message" class="form-message" role="alert" hidden></div>
+{{/if}}
+

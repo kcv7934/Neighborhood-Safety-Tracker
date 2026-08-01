@@ -1,20 +1,20 @@
 <h1>Saved Location Details</h1>
 
 {{#if successMessage}}
-  <p>{{successMessage}}</p>
+  <p class="status-message">{{successMessage}}</p>
 {{/if}}
 
-<article>
+<article class="location-details">
   <h2>{{location.label}}</h2>
 
-  <p>Address: {{location.address}}</p>
+  <p><strong>Address:</strong> {{location.address}}</p>
 
-  <p>Latitude: {{location.latitude}}</p>
+  <p><strong>Latitude:</strong> {{location.latitude}}</p>
 
-  <p>Longitude: {{location.longitude}}</p>
+  <p><strong>Longitude:</strong> {{location.longitude}}</p>
 
   {{#if location.tags.length}}
-    <p>Tags:</p>
+    <p><strong>Tags:</strong></p>
 
     <ul>
       {{#each location.tags}}
@@ -26,32 +26,39 @@
   {{/if}}
 </article>
 
-<section>
-  <h2>Filter Nearby User</h2>
+<section class="nearby-filter-section">
+  <h2>Filter Nearby User Reports</h2>
 
-  <form id="nearby-report-filter-form">
-    <label for="report-category-fitler">Category</label>
-    <select id="report-category-filter" name="category">
-      <option value="">All categories</option>
+  <form id="nearby-report-filter-form" class="nearby-filter-form">
+    <div class="filter-field">
+      <label for="report-category-fitler">Category</label>
+      <select id="report-category-filter" name="category">
+        <option value="">All categories</option>
 
-      {{#each categories}}
-        <option value="{{this}}">{{this}}</option>
-      {{/each}}
-    </select>
+        {{#each categories}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
 
-    <label for="report-start-date-filter">Start Date</label>
-    <input type="date" id="report-start-date-filter" name="startDate" />
+    <div class="filter-field">
+      <label for="report-start-date-filter">Start Date</label>
+      <input type="date" id="report-start-date-filter" name="startDate" />
+    </div>
 
-    <label for="report-end-date-filter">End Date</label>
-    <input type="date" id="report-end-date-filter" name="endDate" />
+    <div class="filter-field">
+      <label for="report-end-date-filter">End Date</label>
+      <input type="date" id="report-end-date-filter" name="endDate" />
+    </div>
 
-    <button type="submit">Apply Filters</button>
-
-    <button type="button" id="clear-report-filters">Clear Filters</button>
+    <div class="filter-actions">
+      <button type="submit" class="filter-button">Apply Filters</button>
+      <button type="button" id="clear-report-filters" class="clear-button">Clear Filters</button>
+    </div>
   </form>
 </section>
 
-<section>
+<section class="map-section">
   <h2>Map</h2>
 
   <div
@@ -62,23 +69,18 @@
     data-label="{{location.label}}"
   ></div>
 
-  <p id="map-message" role="alert" hidden></p>
+  <p id="map-message" class="form-message" role="alert" hidden></p>
 </section>
 
-<p>
-  <a href="/saved-locations/{{location._id}}/edit">Edit Saved Location</a>
-</p>
-
-<p>
+<div class="page-actions">
+  <a href="/saved-locations/{{location._id}}/edit" class="button-link">Edit Saved Location</a>
   <button
     type="button"
     id="delete-saved-location-button"
     value="{{location._id}}"
+    class="delete-button"
   >Delete Saved Location</button>
-</p>
-
-<div id="delete-message" role="alert" hidden></div>
-
-<p>
   <a href="/saved-locations/my-locations">Back to My Saved Locations</a>
-</p>
+</div>
+
+<div id="delete-message" class="form-message" role="alert" hidden></div>

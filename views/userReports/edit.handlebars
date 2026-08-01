@@ -1,35 +1,44 @@
 <h1>Edit User Report</h1>
 
-<form id="edit-user-report-form">
+<form id="edit-user-report-form" class="page-form">
     <input type="hidden" name="reportId" value="{{report._id}}"/>
 
-    <label for="category">Category</label>
-    <select id="category" name="category" required>
-        {{#each categories}}
-            <option value="{{value}}" {{#if selected}} selected {{/if}}>
-                {{value}}
-            </option>
-        {{/each}}
-    </select>
+    <div class="form-field">
+        <label for="category">Category</label>
+        <select id="category" name="category" required>
+            {{#each categories}}
+                <option value="{{value}}" {{#if selected}} selected {{/if}}>
+                    {{value}}
+                </option>
+            {{/each}}
+        </select>
+    </div>
 
-    <label for="address">Address</label>
-    <input type="text" id="address" name="address" value="{{report.streetAddress}}" maxlength="50" required/>
+    <div class="form-field">
+        <label for="address">Address</label>
+        <input type="text" id="address" name="address" value="{{report.streetAddress}}" maxlength="50" required/>
+    </div>
 
-    <label for="borough">Borough</label>
-    <select id="borough" name="borough" required>
-        {{#each boroughs}}
-            <option value="{{value}}" {{#if selected}} selected {{/if}}>
-                {{value}}
-            </option>
-        {{/each}}
-    </select>
+    <div class="form-field">
+        <label for="borough">Borough</label>
+        <select id="borough" name="borough" required>
+            {{#each boroughs}}
+                <option value="{{value}}" {{#if selected}} selected {{/if}}>
+                    {{value}}
+                </option>
+            {{/each}}
+        </select>
+    </div>
+    
+    <div class="form-field">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" minlength="10" maxlength="500" required>{{report.description}}</textarea>
+    </div>
 
-    <label for="description">Description</label>
-    <textarea id="description" name="description" minlength="10" maxlength="500" required>{{report.description}}</textarea>
+    <div class="form-actions">
+        <button type="submit">Save Changes</button>
+        <a href="/user-reports/{{report._id}}">Cancel</a>
+    </div>
 
-    <button type="submit">Save Changes</button>
-
-    <a href="/user-reports/{{report._id}}">Cancel</a>
-
-    <div id="form-message" role="alert" hidden></div>
+    <div id="form-message" class="form-message" role="alert" hidden></div>
 </form>
