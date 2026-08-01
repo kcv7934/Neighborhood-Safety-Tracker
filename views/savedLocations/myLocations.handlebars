@@ -1,52 +1,60 @@
 <h1>My Saved Locations</h1>
 
 {{#if successMessage}}
-  <p>{{successMessage}}</p>
+  <p class="status-message">{{successMessage}}</p>
 {{/if}}
 
 <p>
-  <a href="/saved-locations/create">Save a New Location</a>
+  <a class="button-link" href="/saved-locations/create">Save a New Location</a>
 </p>
 
-<form method="GET" action="/saved-locations/my-locations">
-  <label for="tag-filter">Filter by tag</label>
-  <input
-    type="text"
-    id="tag-filter"
-    name="tag"
-    value="{{selectedTag}}"
-    maxLength="25"
-    required
-  />
+<form
+  method="GET"
+  action="/saved-locations/my-locations"
+  class="location-filter-form"
+>
+  <div class="filter-field">
+    <label for="tag-filter">Filter by tag</label>
+    <input
+      type="text"
+      id="tag-filter"
+      name="tag"
+      value="{{selectedTag}}"
+      maxLength="25"
+      required
+    />
+  </div>
 
-  <button type="submit">Filter</button>
+  <button class="filter-button" type="submit">Filter</button>
 
-  <a href="/saved-locations/my-locations">Clear Filter</a>
+  <a class="clear-filter-link" href="/saved-locations/my-locations">Clear Filter</a>
 </form>
 
 {{#if mySavedLocations.length}}
-  {{#each mySavedLocations}}
-    <article>
-      <h2>{{label}}</h2>
+  <div class="location-list">
+    {{#each mySavedLocations}}
+      <article class="location-card">
+        <h2>{{label}}</h2>
 
-      <p>Address: {{address}}</p>
+        <p><strong>Address:</strong> {{address}}</p>
 
-      {{#if tags.length}}
-        <p>Tags:</p>
-        <ul>
-          {{#each tags}}
-            <li>{{this}}</li>
-          {{/each}}
-        </ul>
-      {{else}}
-        <p>No tags</p>
-      {{/if}}
+        {{#if tags.length}}
+          <p><strong>Tags:</strong></p>
+          <ul>
+            {{#each tags}}
+              <li>{{this}}</li>
+            {{/each}}
+          </ul>
+        {{else}}
+          <p>No tags</p>
+        {{/if}}
 
-      <p>
-        <a href="/saved-locations/{{_id}}">View Location</a>
-      </p>
-    </article>
-  {{/each}}
+        <p>
+          <a href="/saved-locations/{{_id}}">View Location</a>
+        </p>
+      </article>
+    {{/each}}
+  </div>
 {{else}}
   {{#if hasFilter}}
     <p>
