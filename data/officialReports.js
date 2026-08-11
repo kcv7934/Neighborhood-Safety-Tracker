@@ -1,0 +1,71 @@
+import { ObjectId } from "mongodb";
+import { officialReports } from "../config/mongoCollections.js";
+import * as validation from "./validation.js";
+import { geocodeAddress } from "./geocoding.js";
+import { NotFoundError, ForbiddenError } from "./error.js";
+import { findDistanceBetweenInMiles } from "./locationUtils.js";
+import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+export const getOfficialReportById = async (reportId) => {
+    reportId = validation.validateId(reportId, "reportId");
+
+    const officialReportsCollection = await officialReports();
+    const officialReport = await officialReportsCollection.findOne({ _id: new ObjectId(reportId) });
+
+    if (!officialReport) {
+        throw new NotFoundError(`Official report with id ${reportId} not found`);
+    }
+
+    return {
+        ...officialReport,
+        _id: officialReport._id.toString(),
+    };
+};
+
+export const getAllOfficialReports = async () => {
+    const officialReportsCollection = await officialReports();
+
+    let officialReportList = await officialReportsCollection.find().toArray();
+
+    officialReportList = officialReportList.map((report) => ({
+        ...report,
+        _id: report._id.toString(),
+    }));
+
+    return officialReportList;
+};
+
+export const queryOfficialReportsFromDB = async () => {
+    let baseUrl = 'https://data.cityofnewyork.us/api/v3/views/5uac-w243/query.json';
+
+    const appToken = process.env.APP_TOKEN;
+    if (!appToken) {
+        throw new Error('APP_TOKEN is not defined in the environment variables');
+    }
+
+    baseUrl += `?app_token=${appToken}`;
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    
+    // Gets 3 months ago from the current date
+    const monthsBefore = 3;
+    const currentMonth = String(currentDate.getMonth() + 1 - 3).padStart(2, '0');
+
+    const currentDay = String(currentDate.getDate()).padStart(2, '0');
+    const formattedDate = `${currentYear}-${currentMonth}-${currentDay}`;
+
+    baseUrl += `&query=SELECT%20*%20WHERE%20%60cmplnt_fr_dt%60%20%3E%3D%20'${formattedDate}'`;
+
+    try {
+        const response = await axios.get(baseUrl);
+        console.log(`Successfully queried ${response.data.length} official reports from the database`);
+        return response.data;
+    } catch (error) {
+        console.error('Error querying official reports:', error);
+        throw new Error('Failed to query official reports from the database');
+    }
+};

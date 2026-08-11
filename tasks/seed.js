@@ -1,6 +1,7 @@
 import { dbConnection, closeConnection } from "../config/mongoConnection.js";
-import { userReports } from "../config/mongoCollections.js";
+import { userReports, officialReports } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
+import { queryOfficialReportsFromDB } from "../data/officialReports.js";
 
 const seedUserReports = async () => {
   const userReportsCollection = await userReports();
@@ -35,6 +36,30 @@ const seedUserReports = async () => {
       updatedAt: now,
     },
   ];
+
+  await userReportsCollection.insertMany(userReportData);
+};
+
+const seedOfficialReports = async () => {
+  const officialReportsCollection = await officialReports();
+
+  const officialReportData = await queryOfficialReportsFromDB();
+
+  const formattedReports = officialReportData.map((report) => ({
+    _id: new ObjectId(),
+    nycComplaintNumber: report.cmplnt_num,
+    borough: report.boro_nm,
+    precinct: report.addr_pct_cd,
+    latitude: report.latitude,
+    longitude: report.longitude,
+    crimeType: report.ofns_desc,
+    crimeDescription: report.pd_desc,
+    lawCategory: report.law_cat_cd,
+    attemptedOrCompleted: report.crm_atpt_cptd_cd,
+    dateOccurred: report.cmplnt_fr_dt
+  }));
+
+  await officialReportsCollection.insertMany(formattedReports);
 };
 
 const main = async () => {
@@ -43,6 +68,8 @@ const main = async () => {
 
   await seedUserReports();
 
+  await seedOfficialReports();
+
   console.log("Database seeded successfully");
 
   await closeConnection();
@@ -50,7 +77,9 @@ const main = async () => {
 
 main().catch(async (e) => {
   console.error("Could not seed database, something went wrong");
-  console.error(error);
+  console.error(e);
 
   await closeConnection();
 });
+
+export default main;
