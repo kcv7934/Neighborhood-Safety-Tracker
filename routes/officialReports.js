@@ -22,6 +22,7 @@ router.get("/:reportId", async (req, res) => {
 
         const officialReport = await officialReportData.getOfficialReportById(reportId);
 
+        // TODO: Create a view for the official report details page and render it here instead of returning JSON
         return res.status(200).json(officialReport);
     } catch (e) {
         return handleApiError(e, res);

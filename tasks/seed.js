@@ -36,6 +36,8 @@ const seedUserReports = async () => {
       updatedAt: now,
     },
   ];
+
+  await userReportsCollection.insertMany(userReportData);
 };
 
 const seedOfficialReports = async () => {
@@ -79,3 +81,5 @@ main().catch(async (e) => {
 
   await closeConnection();
 });
+
+export default main;
