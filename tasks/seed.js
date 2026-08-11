@@ -2,6 +2,7 @@ import { dbConnection, closeConnection } from "../config/mongoConnection.js";
 import { userReports, officialReports } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
 import { queryOfficialReportsFromDB } from "../data/officialReports.js";
+import * as validation from "../data/validation.js";
 
 const seedUserReports = async () => {
   const userReportsCollection = await userReports();
@@ -52,6 +53,7 @@ const seedOfficialReports = async () => {
     precinct: report.addr_pct_cd,
     latitude: report.latitude,
     longitude: report.longitude,
+    category: validation.mapOfficialCrimeCategory(report.ofns_desc),
     crimeType: report.ofns_desc,
     crimeDescription: report.pd_desc,
     lawCategory: report.law_cat_cd,
