@@ -7,18 +7,25 @@ import { handlePageError } from "./errorHandlers.js";
 
 const TEMP_AUTHOR_ID = "687000000000000000000001";
 
+const DASHBOARD_LOCATION_LIMIT = 3;
+
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
     try {
       const savedLocations =
         await savedLocationData.getSavedLocationsByUser(TEMP_AUTHOR_ID);
 
+      const dashboardSavedLocations = savedLocations.slice(
+        0,
+        DASHBOARD_LOCATION_LIMIT,
+      );
+
       const userReports =
         await userReportData.getUserReportsByAuthor(TEMP_AUTHOR_ID);
 
       return res.render("home", {
         title: "Neighborhood Safety Tracker",
-        savedLocations,
+        savedLocations: dashboardSavedLocations,
         savedLocationCount: savedLocations.length,
         userReportCount: userReports.length,
       });

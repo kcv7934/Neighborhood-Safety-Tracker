@@ -13,6 +13,11 @@ a {
   color: #0284c7;
 }
 
+a:hover,
+a:focus {
+  color: #075985;
+}
+
 .app-layout {
   display: flex;
   min-height: 100vh;
@@ -104,11 +109,27 @@ input,
 select,
 textarea {
   padding: 8px;
-  border: 1px solid #9CA3AF;
+  border: 1px solid #9ca3af;
   border-radius: 5px;
 }
 
 button {
   padding: 8px;
   cursor: pointer;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 8px 12px;
+  text-decoration: none;
+  border-radius: 5px;
+  color: #ffffff;
+  background-color: #4f46e5;
+  border: 1px solid #4338ca;
+}
+
+.button-link:hover,
+.button-link:focus {
+  background-color: #3730a3;
+  color: #ffffff;
 }

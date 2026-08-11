@@ -1,47 +1,57 @@
 <h1>Edit Saved Location</h1>
 
-<form id="edit-saved-location-form">
+<form id="edit-saved-location-form" class="page-form">
   <input type="hidden" name="savedLocationId" value="{{location._id}}" />
 
-  <label for="label">Label</label>
-  <input
-    type="text"
-    id="label"
-    name="label"
-    value="{{location.label}}"
-    maxlength="50"
-    required
-  />
+  <div class="form-field">
+    <label for="label">Label</label>
+    <input
+      type="text"
+      id="label"
+      name="label"
+      value="{{location.label}}"
+      maxlength="50"
+      required
+    />
+  </div>
 
-  <label for="address">Address</label>
-  <input
-    type="text"
-    id="address"
-    name="address"
-    value="{{location.streetAddress}}"
-    maxlength="50"
-    required
-  />
+  <div class="form-field">
+    <label for="address">Address</label>
+    <input
+      type="text"
+      id="address"
+      name="address"
+      value="{{location.streetAddress}}"
+      maxlength="50"
+      required
+    />
+  </div>
 
-  <label for="borough">Borough</label>
-  <select id="borough" name="borough" required>
-    <option value="">Select a borough</option>
+  <div class="form-field">
+    <label for="borough">Borough</label>
+    <select id="borough" name="borough" required>
+      <option value="">Select a borough</option>
 
-    {{#each boroughs}}
-      <option value="{{value}}" {{#if selected}} selected {{/if}}>
-        {{value}}
-      </option>
-    {{/each}}
-  </select>
+      {{#each boroughs}}
+        <option value="{{value}}" {{#if selected}} selected {{/if}}>
+          {{value}}
+        </option>
+      {{/each}}
+    </select>
+  </div>
+  
+  <div class="form-field">
+    <label for="tags">Tags</label>
+    <input type="text" id="tags" name="tags" value="{{location.tagsStr}}" />
 
-  <label for="tags">Tags</label>
-  <input type="text" id="tags" name="tags" value="{{location.tagsStr}}" />
+    <p class="form-help">Optional. Separate tags with commas i.e. Home, Family, Downtown</p>
+  </div>
+  
+  <div class="form-actions">
+    <button type="submit">Save Changes</button>
+    <a href="/saved-locations/{{location._id}}">Cancel</a>
+  </div>
+  
 
-  <p>Optional. Separate tags with commas i.e. Home, Family, Downtown</p>
-
-  <button type="submit">Save Changes</button>
-
-  <a href="/saved-locations/{{location._id}}">Cancel</a>
-
-  <div id="form-message" role="alert" hidden></div>
+  <div id="form-message" class="form-message" role="alert" hidden></div>
 </form>

@@ -53,6 +53,7 @@ router.get("/create", (req, res) => {
     title: "Save a Location",
     boroughs: validation.validBoroughs,
     partial: "saved_location_script",
+    stylesheet: "savedLocations.css",
   });
 });
 
@@ -76,6 +77,7 @@ router.get("/my-locations", async (req, res) => {
       selectedTag: tag || "",
       hasFilter: tag !== undefined,
       successMessage,
+      stylesheet: "savedLocations.css",
     });
   } catch (e) {
     return handlePageError(e, res, "Saved Location");
@@ -115,6 +117,7 @@ router.get("/:savedLocationId/edit", async (req, res) => {
       location: preparedLocation,
       boroughs,
       partial: "saved_location_script",
+      stylesheet: "savedLocations.css",
     });
   } catch (e) {
     return handlePageError(e, res, "Saved Location");
@@ -171,7 +174,7 @@ router
         categories: validation.validCategories,
         successMessage,
         leaflet: true,
-        stylesheet: "savedLocationMap.css",
+        stylesheet: "savedLocations.css",
         partial: "saved_location_map_script",
       });
     } catch (e) {
