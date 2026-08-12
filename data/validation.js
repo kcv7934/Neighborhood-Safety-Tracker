@@ -439,3 +439,15 @@ export const mapOfficialCrimeCategory = (crimeType) => {
 
   return returnValue;
 };
+
+export const validateSource = (source) => {
+  source = validateString(source, "source").toLowerCase();
+
+  const validSources = ["all", "official", "user"];
+
+  if (!validSources.includes(source))
+    throw `Source must be one of: ${validSources.join(", ")}`;
+
+  return source;
+};
+
