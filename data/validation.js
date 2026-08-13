@@ -329,7 +329,7 @@ export const validateSortOrder = (sortOrder) => {
 export const validateOfficialReportSortBy = (sortBy) => {
   sortBy = validateString(sortBy, "sortBy");
 
-  const validSortFields = ["date", "borough", "precinct", "crimeType"];
+  const validSortFields = ["date", "borough", "precinct", "category"];
 
   if (!validSortFields.includes(sortBy))
     throw `sortBy must be one of: ${validSortFields.join(", ")}`;
@@ -423,6 +423,7 @@ export const mapOfficialCrimeCategory = (crimeType) => {
     "OFFENSES AGAINST PUBLIC ADMINI": "PUBLIC ADMINISTRATION OFFENSE",
 
     RAPE: "SEXUAL OFFENSE",
+    ROBBERY: "ROBBERY",
     "SEX CRIMES": "SEXUAL OFFENSE",
 
     "OTHER TRAFFIC INFRACTION": "TRAFFIC OFFENSE",

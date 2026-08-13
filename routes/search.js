@@ -2,9 +2,22 @@ import { Router } from "express";
 import * as officialReportData from "../data/officialReports.js";
 import * as userReportData from "../data/userReports.js";
 import * as validation from "../data/validation.js";
-import { handleApiError } from "./errorHandlers.js";
+import { handleApiError, handlePageError } from "./errorHandlers.js";
 
 const router = Router();
+
+router.get("/", async (req, res) => {
+  try {
+    return res.render("search", {
+      title: "Search Complaints",
+      boroughs: validation.validBoroughs,
+      categories: validation.validCategories,
+      officialOnlyCategories: validation.officialOnlyCategories,
+    });
+  } catch (e) {
+    return handlePageError(e, res, "Complaint Search");
+  }
+});
 
 router.get("/results", async (req, res) => {
   try {
