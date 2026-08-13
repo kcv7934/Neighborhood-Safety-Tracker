@@ -160,3 +160,96 @@ export const searchOfficialReports = async ({
 
   return reports;
 };
+
+export const getNearbyOfficialReports = async (
+  latitude,
+  longitude,
+  category,
+  startDate,
+  endDate,
+) => {
+  latitude = validation.validateLatitude(latitude);
+  longitude = validation.validateLongitude(longitude);
+
+  let validatedCategory;
+  let validatedStartDateValue;
+  let validatedEndDateValue;
+
+  if (category !== undefined && category !== "") {
+    validatedCategory = validation.validateSearchCategory(category);
+  }
+
+  if (startDate !== undefined && startDate !== "") {
+    validatedStartDateValue = validation.validateDate(startDate, "startDate");
+  }
+
+  if (endDate !== undefined && endDate !== "") {
+    validatedEndDateValue = validation.validateDate(endDate, "endDate");
+  }
+
+  if (
+    validatedStartDateValue !== undefined &&
+    validatedEndDateValue !== undefined &&
+    validatedStartDateValue > validatedEndDateValue
+  ) {
+    throw "Start date cannot be after end date";
+  }
+
+  const query = {};
+
+  if (validatedCategory !== undefined) {
+    query.category = validatedCategory;
+  }
+
+  if (
+    validatedStartDateValue !== undefined &&
+    validatedEndDateValue !== undefined
+  ) {
+    query.dateOccurred = {
+      $gte: `${startDate}T00:00:00.000`,
+      $lte: `${endDate}T23:59:59.999`,
+    };
+  } else if (validatedStartDateValue !== undefined) {
+    query.dateOccurred = {
+      $gte: `${startDate}T00:00:00.000`,
+    };
+  } else if (validatedEndDateValue !== undefined) {
+    query.dateOccurred = {
+      $lte: `${endDate}T23:59:59.999`,
+    };
+  }
+
+  const officialReportsCollection = await officialReports();
+
+  const reportCandidates = await officialReportsCollection
+    .find(query)
+    .toArray();
+
+  const reportsWithDistance = reportCandidates.map((report) => {
+    const reportLatitude = Number(report.latitude);
+    const reportLongitude = Number(report.longitude);
+
+    const distanceInMiles = findDistanceBetweenInMiles(
+      latitude,
+      longitude,
+      reportLatitude,
+      reportLongitude,
+    );
+
+    return {
+      ...report,
+      _id: report._id.toString(),
+      distanceInMiles,
+    };
+  });
+
+  const nearbyReports = reportsWithDistance.filter((report) => {
+    return report.distanceInMiles <= 1;
+  });
+
+  nearbyReports.sort((a, b) => {
+    return a.distanceInMiles - b.distanceInMiles;
+  });
+
+  return nearbyReports;
+};

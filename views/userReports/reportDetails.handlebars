@@ -58,12 +58,9 @@
     >Delete Report</button>
   {{/if}}
 
-  {{#if returnSavedLocationId}}
-    <a href="/saved-locations/{{returnSavedLocationId}}">Back to Saved Location
-      Map</a>
-  {{/if}}
-
-  <a href="/user-reports/my-reports">Back to My Reports</a>
+  <button type="button" id="back-button">
+    Back
+  </button>
 </div>
 
 {{#if isOwner}}

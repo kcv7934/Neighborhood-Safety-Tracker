@@ -133,3 +133,17 @@ button {
   background-color: #3730a3;
   color: #ffffff;
 }
+
+#back-button {
+  padding: 10px 10px;
+  background-color: #ffffff;
+  color: black;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#back-button:hover {
+  background-color: #f3f4f6;
+}

@@ -171,16 +171,41 @@ router.get("/:savedLocationId/edit", async (req, res) => {
 
 router.get("/:savedLocationId/nearby-user-reports", async (req, res) => {
   try {
-    const id = req.params.savedLocationId;
+    const savedLocationId = req.params.savedLocationId;
 
     const { category, startDate, endDate } = req.query;
 
     const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
-      id,
+      savedLocationId,
       TEMP_AUTHOR_ID,
     );
 
     const nearbyReports = await userReportData.getNearbyUserReports(
+      savedLocation.latitude,
+      savedLocation.longitude,
+      category,
+      startDate,
+      endDate,
+    );
+
+    return res.status(200).json(nearbyReports);
+  } catch (e) {
+    return handleApiError(e, res);
+  }
+});
+
+router.get("/:savedLocationId/nearby-official-reports", async (req, res) => {
+  try {
+    const savedLocationId = req.params.savedLocationId;
+
+    const { category, startDate, endDate } = req.query;
+
+    const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
+      savedLocationId,
+      TEMP_AUTHOR_ID,
+    );
+
+    const nearbyReports = await officialReportData.getNearbyOfficialReports(
       savedLocation.latitude,
       savedLocation.longitude,
       category,
