@@ -154,8 +154,13 @@ const displayResults = (reports) => {
 
       const date = document.createElement("p");
       date.textContent = `Date: ${new Date(report.dateOccurred).toLocaleDateString()}`;
-
       reportElement.appendChild(date);
+
+      const viewDetails = document.createElement("a");
+      viewDetails.textContent = "View Details";
+      viewDetails.href = `/official-reports/${report._id}`;
+      viewDetails.classList.add("view-report-details");
+      reportElement.appendChild(viewDetails);
     } else {
       const address = document.createElement("p");
       address.textContent = `Address: ${report.address}`;
