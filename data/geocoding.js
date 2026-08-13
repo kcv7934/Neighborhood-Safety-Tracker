@@ -108,3 +108,73 @@ export const geocodeAddress = async (address, borough) => {
     throw e;
   }
 };
+
+export const reverseGeocodeCoordinates = async (latitude, longitude) => {
+  latitude = Number(latitude);
+  longitude = Number(longitude);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    throw "Latitude and longitude must be valid numbers";
+  }
+
+  if (
+    latitude < NYC_LATITUDE_MIN ||
+    latitude > NYC_LATITUDE_MAX ||
+    longitude < NYC_LONGITUDE_MIN ||
+    longitude > NYC_LONGITUDE_MAX
+  ) {
+    throw "Coordinates must be located within New York City";
+  }
+
+  try {
+    const response = await axios.get(
+      "https://nominatim.openstreetmap.org/reverse",
+      {
+        params: {
+          lat: latitude,
+          lon: longitude,
+          format: "jsonv2",
+          addressdetails: 1,
+        },
+        headers: {
+          "User-Agent": "NeighborhoodSafetyTracker/1.0",
+        },
+        timeout: 5000,
+      },
+    );
+
+    if (!response.data || !response.data.address) {
+      throw "An address could not be found for these coordinates";
+    }
+
+    const addressDetails = response.data.address;
+
+    const houseNumber = addressDetails.house_number || "";
+
+    let street = "";
+
+    if (addressDetails.road) {
+      street = addressDetails.road;
+    } else if (addressDetails.pedestrian) {
+      street = addressDetails.pedestrian;
+    } else if (addressDetails.footway) {
+      street = addressDetails.footway;
+    }
+
+    let address = `${houseNumber} ${street}`.trim();
+
+    if (!address) {
+      address = response.data.display_name;
+    }
+
+    return { address, latitude, longitude };
+  } catch (e) {
+    if (typeof e === "string") throw e;
+
+    if (axios.isAxiosError(e)) {
+      throw new Error("The geocoding service is currently unavailable");
+    }
+
+    throw e;
+  }
+};

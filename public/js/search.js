@@ -161,6 +161,12 @@ const displayResults = (reports) => {
       viewDetails.href = `/official-reports/${report._id}`;
       viewDetails.classList.add("view-report-details");
       reportElement.appendChild(viewDetails);
+
+      const saveLocation = document.createElement("a");
+      saveLocation.textContent = "Save Location";
+      saveLocation.href = `/saved-locations/create?officialReportId=${report._id}`;
+      saveLocation.classList.add("save-report-location");
+      reportElement.appendChild(saveLocation);
     } else {
       const address = document.createElement("p");
       address.textContent = `Address: ${report.address}`;
@@ -181,6 +187,13 @@ const displayResults = (reports) => {
       viewDetails.href = `/user-reports/${report._id}`;
       viewDetails.classList.add("view-report-details");
       reportElement.appendChild(viewDetails);
+
+      const saveLocation = document.createElement("a");
+      saveLocation.textContent = "Save Location";
+      saveLocation.href = `/saved-locations/create?userReportId=${report._id}`;
+      saveLocation.classList.add("save-report-location");
+
+      reportElement.appendChild(saveLocation);
     }
 
     results.appendChild(reportElement);

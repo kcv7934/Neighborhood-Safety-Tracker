@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as officialReportData from "../data/officialReports.js";
 import { handleApiError, handlePageError } from "./errorHandlers.js";
+import { reverseGeocodeCoordinates } from "../data/geocoding.js";
 
 const router = Router();
 
@@ -20,8 +21,22 @@ router.get("/:reportId", async (req, res) => {
     const officialReport =
       await officialReportData.getOfficialReportById(reportId);
 
+    let approximateAddress = "Address unavailable";
+
+    try {
+      const location = await reverseGeocodeCoordinates(
+        officialReport.latitude,
+        officialReport.longitude,
+      );
+
+      approximateAddress = location.address;
+    } catch (e) {
+      console.error(e);
+    }
+
     const preparedOfficialReport = {
       ...officialReport,
+      approximateAddress,
       dateOccurred: new Date(officialReport.dateOccurred).toLocaleDateString(),
     };
 

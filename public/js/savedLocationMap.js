@@ -33,7 +33,6 @@ const loadNearbyUserReports = async (
   message.hidden = true;
   message.textContent = "";
 
-  // Remove only the existing user report markers
   reportLayer.clearLayers();
 
   try {
@@ -47,7 +46,23 @@ const loadNearbyUserReports = async (
     const nearbyReports = response.data;
 
     if (nearbyReports.length === 0) {
-      message.textContent = "No nearby user reports match the selected filters";
+      let hasFilters = false;
+
+      if (filters.category) {
+        hasFilters = true;
+      } else if (filters.startDate) {
+        hasFilters = true;
+      } else if (filters.endDate) {
+        hasFilters = true;
+      }
+
+      if (hasFilters) {
+        message.textContent =
+          "No nearby user reports match the selected filters";
+      } else {
+        message.textContent = "No nearby user reports found within 1 mile";
+      }
+
       message.hidden = false;
       return;
     }
@@ -156,7 +171,6 @@ const initializeSavedLocationMap = (element) => {
     padding: [20, 20],
   });
 
-  // This layer contains only user report markers.
   const userReportLayer = L.layerGroup().addTo(map);
 
   loadNearbyUserReports(savedLocationId, userReportLayer);
