@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as userReportData from "../data/userReports.js";
 import * as validation from "../data/validation.js";
 import { handleApiError, handlePageError } from "./errorHandlers.js";
+import xss from "xss";
 
 const router = Router();
 
@@ -27,14 +28,18 @@ router
 
       // TODO: replace with req.session.user._id when authentication is implemented
       const authorId = TEMP_AUTHOR_ID;
-      const { category, address, borough, description } = req.body;
+
+      const cleanCategory = xss(req.body.category);
+      const cleanAddress = xss(req.body.address);
+      const cleanBorough = xss(req.body.borough);
+      const cleanDescription = xss(req.body.description);
 
       const newUserReport = await userReportData.createUserReport(
         authorId,
-        category,
-        address,
-        borough,
-        description,
+        cleanCategory,
+        cleanAddress,
+        cleanBorough,
+        cleanDescription,
       );
 
       return res.status(201).json(newUserReport);
@@ -101,12 +106,12 @@ router.get("/:userReportId/edit", async (req, res) => {
       };
     });
 
-    const streetAddress = userReport.address.split(",")[0].trim()
+    const streetAddress = userReport.address.split(",")[0].trim();
 
     const preparedUserReport = {
       ...userReport,
-      streetAddress
-    }
+      streetAddress,
+    };
 
     return res.render("userReports/edit", {
       title: "Edit User Report",
@@ -163,7 +168,25 @@ router
           .json({ error: "There are no fields in the request body" });
       }
       const id = req.params.userReportId;
-      const updates = req.body;
+
+      const updates = {};
+
+      if (req.body.category !== undefined) {
+        updates.category = xss(req.body.category);
+      }
+
+      if (req.body.address !== undefined) {
+        updates.address = xss(req.body.address);
+      }
+
+      if (req.body.borough !== undefined) {
+        updates.borough = xss(req.body.borough);
+      }
+
+      if (req.body.description !== undefined) {
+        updates.description = xss(req.body.description);
+      }
+      
       const updatedUserReport = await userReportData.updateUserReport(
         id,
         TEMP_AUTHOR_ID,

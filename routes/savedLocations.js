@@ -5,6 +5,7 @@ import { handleApiError, handlePageError } from "./errorHandlers.js";
 import * as validation from "../data/validation.js";
 import * as userReportData from "../data/userReports.js";
 import { reverseGeocodeCoordinates } from "../data/geocoding.js";
+import xss from "xss";
 
 const router = Router();
 
@@ -14,7 +15,11 @@ router
   .route("/")
   .get(async (req, res) => {
     try {
-      const tag = req.query.tag;
+      let tag;
+
+      if (req.query.tag !== undefined) {
+        tag = xss(req.query.tag);
+      }
 
       const savedLocationList = await savedLocationData.getSavedLocationsByUser(
         TEMP_AUTHOR_ID,
@@ -34,14 +39,24 @@ router
           .json({ error: "There are no fields in the request body" });
       }
 
-      const { label, address, borough, tags = [] } = req.body;
+      const cleanLabel = xss(req.body.label);
+      const cleanAddress = xss(req.body.address);
+      const cleanBorough = xss(req.body.borough);
+
+      let cleanTags = [];
+
+      if (req.body.tags !== undefined) {
+        cleanTags = req.body.tags.map((tag) => {
+          return xss(tag);
+        });
+      }
 
       const newSavedLocation = await savedLocationData.createSavedLocation(
         TEMP_AUTHOR_ID,
-        label,
-        address,
-        borough,
-        tags,
+        cleanLabel,
+        cleanAddress,
+        cleanBorough,
+        cleanTags,
       );
 
       return res.status(201).json(newSavedLocation);
@@ -55,24 +70,24 @@ router.get("/create", async (req, res) => {
     let address = "";
     let selectedBorough = "";
 
-    if (req.query.userReportId !== undefined) {
-      const userReportId = validation.validateId(
-        req.query.userReportId,
-        "userReportId",
-      );
+    if (
+      req.query.userReportId !== undefined &&
+      req.query.officialReportId !== undefined
+    ) {
+      throw "Only one report can be used to save a location, two were provided";
+    }
 
-      const userReport = await userReportData.getUserReportById(userReportId);
+    if (req.query.userReportId !== undefined) {
+      const userReport = await userReportData.getUserReportById(
+        req.query.userReportId,
+      );
 
       address = userReport.address;
       selectedBorough = userReport.borough;
     } else if (req.query.officialReportId !== undefined) {
-      const officialReportId = validation.validateId(
+      const officialReport = await officialReportData.getOfficialReportById(
         req.query.officialReportId,
-        "officialReportId",
       );
-
-      const officialReport =
-        await officialReportData.getOfficialReportById(officialReportId);
 
       const location = await reverseGeocodeCoordinates(
         officialReport.latitude,
@@ -104,7 +119,11 @@ router.get("/create", async (req, res) => {
 
 router.get("/my-locations", async (req, res) => {
   try {
-    const tag = req.query.tag;
+    let tag;
+
+    if (req.query.tag !== undefined) {
+      tag = xss(req.query.tag);
+    }
 
     const mySavedLocations = await savedLocationData.getSavedLocationsByUser(
       TEMP_AUTHOR_ID,
@@ -261,10 +280,30 @@ router
 
       const id = req.params.savedLocationId;
 
+      const updates = {};
+
+      if (req.body.label !== undefined) {
+        updates.label = xss(req.body.label);
+      }
+
+      if (req.body.address !== undefined) {
+        updates.address = xss(req.body.address);
+      }
+
+      if (req.body.borough !== undefined) {
+        updates.borough = xss(req.body.borough);
+      }
+
+      if (req.body.tags !== undefined) {
+        updates.tags = req.body.tags.map((tag) => {
+          return xss(tag);
+        });
+      }
+
       const updatedSavedLocation = await savedLocationData.updateSavedLocation(
         id,
         TEMP_AUTHOR_ID,
-        req.body,
+        updates,
       );
 
       return res.status(200).json(updatedSavedLocation);
