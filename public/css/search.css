@@ -1,0 +1,22 @@
+#result-count {
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.search-result {
+  max-width: 700px;
+  padding: 20px;
+  margin-bottom: 15px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+}
+
+.search-result h2 {
+  margin-top: 0;
+}
+
+#search-errors {
+  margin-top: 15px;
+  color: #b91c1c;
+}

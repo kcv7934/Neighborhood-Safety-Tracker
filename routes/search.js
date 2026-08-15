@@ -13,6 +13,7 @@ router.get("/", async (req, res) => {
       boroughs: validation.validBoroughs,
       categories: validation.validCategories,
       officialOnlyCategories: validation.officialOnlyCategories,
+      stylesheet: "search.css",
     });
   } catch (e) {
     return handlePageError(e, res, "Complaint Search");

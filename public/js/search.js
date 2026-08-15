@@ -156,17 +156,21 @@ const displayResults = (reports) => {
       date.textContent = `Date: ${new Date(report.dateOccurred).toLocaleDateString()}`;
       reportElement.appendChild(date);
 
+      const actions = document.createElement("div");
+      actions.classList.add("page-actions");
+
       const viewDetails = document.createElement("a");
       viewDetails.textContent = "View Details";
       viewDetails.href = `/official-reports/${report._id}`;
-      viewDetails.classList.add("view-report-details");
-      reportElement.appendChild(viewDetails);
+      viewDetails.classList.add("button-link");
 
       const saveLocation = document.createElement("a");
       saveLocation.textContent = "Save Location";
       saveLocation.href = `/saved-locations/create?officialReportId=${report._id}`;
-      saveLocation.classList.add("save-report-location");
-      reportElement.appendChild(saveLocation);
+      saveLocation.classList.add("button-link");
+
+      actions.append(viewDetails, saveLocation);
+      reportElement.appendChild(actions);
     } else {
       const address = document.createElement("p");
       address.textContent = `Address: ${report.address}`;
@@ -182,18 +186,21 @@ const displayResults = (reports) => {
 
       reportElement.appendChild(date);
 
+      const actions = document.createElement("div");
+      actions.classList.add("page-actions");
+
       const viewDetails = document.createElement("a");
       viewDetails.textContent = "View Details";
       viewDetails.href = `/user-reports/${report._id}`;
-      viewDetails.classList.add("view-report-details");
-      reportElement.appendChild(viewDetails);
+      viewDetails.classList.add("button-link");
 
       const saveLocation = document.createElement("a");
       saveLocation.textContent = "Save Location";
       saveLocation.href = `/saved-locations/create?userReportId=${report._id}`;
-      saveLocation.classList.add("save-report-location");
+      saveLocation.classList.add("button-link");
 
-      reportElement.appendChild(saveLocation);
+      actions.append(viewDetails, saveLocation);
+      reportElement.appendChild(actions);
     }
 
     results.appendChild(reportElement);

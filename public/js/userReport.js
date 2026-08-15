@@ -26,7 +26,7 @@ const getUserReportFormData = (form) => {
 };
 
 const displayFormErrorMessage = (error, messageElement, providedMessage) => {
-  if (e.response && e.response.data && e.response.data.error) {
+  if (error.response && error.response.data && error.response.data.error) {
     messageElement.textContent = error.response.data.error;
   } else if (typeof error === "string") {
     messageElement.textContent = error;
