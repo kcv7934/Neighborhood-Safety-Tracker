@@ -143,21 +143,11 @@ router
         successMessage = "Report updated successfully";
       }
 
-      let returnSavedLocationId = null;
-
-      if (req.query.savedLocationId !== undefined) {
-        returnSavedLocationId = validation.validateId(
-          req.query.savedLocationId,
-          "savedLocationId",
-        );
-      }
-
       return res.render("userReports/reportDetails", {
         title: "User Report Detail",
         report: preparedUserReport,
         isOwner: userReport.authorId === TEMP_AUTHOR_ID,
         successMessage,
-        returnSavedLocationId,
         partial: "user_report_script",
         stylesheet: "userReports.css",
       });

@@ -1,8 +1,10 @@
 import { Router } from "express";
 import * as savedLocationData from "../data/savedLocations.js";
+import * as officialReportData from "../data/officialReports.js";
 import { handleApiError, handlePageError } from "./errorHandlers.js";
 import * as validation from "../data/validation.js";
 import * as userReportData from "../data/userReports.js";
+import { reverseGeocodeCoordinates } from "../data/geocoding.js";
 
 const router = Router();
 
@@ -48,13 +50,56 @@ router
     }
   });
 
-router.get("/create", (req, res) => {
-  return res.render("savedLocations/create", {
-    title: "Save a Location",
-    boroughs: validation.validBoroughs,
-    partial: "saved_location_script",
-    stylesheet: "savedLocations.css",
-  });
+router.get("/create", async (req, res) => {
+  try {
+    let address = "";
+    let selectedBorough = "";
+
+    if (req.query.userReportId !== undefined) {
+      const userReportId = validation.validateId(
+        req.query.userReportId,
+        "userReportId",
+      );
+
+      const userReport = await userReportData.getUserReportById(userReportId);
+
+      address = userReport.address;
+      selectedBorough = userReport.borough;
+    } else if (req.query.officialReportId !== undefined) {
+      const officialReportId = validation.validateId(
+        req.query.officialReportId,
+        "officialReportId",
+      );
+
+      const officialReport =
+        await officialReportData.getOfficialReportById(officialReportId);
+
+      const location = await reverseGeocodeCoordinates(
+        officialReport.latitude,
+        officialReport.longitude,
+      );
+
+      address = location.address;
+      selectedBorough = officialReport.borough;
+    }
+
+    const boroughs = validation.validBoroughs.map((borough) => {
+      return {
+        value: borough,
+        selected: borough === selectedBorough,
+      };
+    });
+
+    return res.render("savedLocations/create", {
+      title: "Save a Location",
+      address,
+      boroughs,
+      partial: "saved_location_script",
+      stylesheet: "savedLocations.css",
+    });
+  } catch (e) {
+    return handlePageError(e, res, "Saved Location");
+  }
 });
 
 router.get("/my-locations", async (req, res) => {
@@ -126,16 +171,41 @@ router.get("/:savedLocationId/edit", async (req, res) => {
 
 router.get("/:savedLocationId/nearby-user-reports", async (req, res) => {
   try {
-    const id = req.params.savedLocationId;
+    const savedLocationId = req.params.savedLocationId;
 
     const { category, startDate, endDate } = req.query;
 
     const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
-      id,
+      savedLocationId,
       TEMP_AUTHOR_ID,
     );
 
     const nearbyReports = await userReportData.getNearbyUserReports(
+      savedLocation.latitude,
+      savedLocation.longitude,
+      category,
+      startDate,
+      endDate,
+    );
+
+    return res.status(200).json(nearbyReports);
+  } catch (e) {
+    return handleApiError(e, res);
+  }
+});
+
+router.get("/:savedLocationId/nearby-official-reports", async (req, res) => {
+  try {
+    const savedLocationId = req.params.savedLocationId;
+
+    const { category, startDate, endDate } = req.query;
+
+    const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
+      savedLocationId,
+      TEMP_AUTHOR_ID,
+    );
+
+    const nearbyReports = await officialReportData.getNearbyOfficialReports(
       savedLocation.latitude,
       savedLocation.longitude,
       category,

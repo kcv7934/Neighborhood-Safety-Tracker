@@ -1,32 +1,52 @@
 import { Router } from "express";
 import * as officialReportData from "../data/officialReports.js";
 import { handleApiError, handlePageError } from "./errorHandlers.js";
-import * as validation from "../data/validation.js";
-import * as userReportData from "../data/userReports.js";
-
+import { reverseGeocodeCoordinates } from "../data/geocoding.js";
 
 const router = Router();
 
 router.get("/", async (req, res) => {
-    try {
-        const officialReportList = await officialReportData.getAllOfficialReports();
-        return res.status(200).json(officialReportList);
-    } catch (e) {
-        return handleApiError(e, res);
-    }
+  try {
+    const officialReportList = await officialReportData.getAllOfficialReports();
+    return res.status(200).json(officialReportList);
+  } catch (e) {
+    return handleApiError(e, res);
+  }
 });
 
 router.get("/:reportId", async (req, res) => {
+  try {
+    const reportId = req.params.reportId;
+
+    const officialReport =
+      await officialReportData.getOfficialReportById(reportId);
+
+    let approximateAddress = "Address unavailable";
+
     try {
-        const reportId = req.params.reportId;
+      const location = await reverseGeocodeCoordinates(
+        officialReport.latitude,
+        officialReport.longitude,
+      );
 
-        const officialReport = await officialReportData.getOfficialReportById(reportId);
-
-        // TODO: Create a view for the official report details page and render it here instead of returning JSON
-        return res.status(200).json(officialReport);
+      approximateAddress = location.address;
     } catch (e) {
-        return handleApiError(e, res);
+      console.error(e);
     }
+
+    const preparedOfficialReport = {
+      ...officialReport,
+      approximateAddress,
+      dateOccurred: new Date(officialReport.dateOccurred).toLocaleDateString(),
+    };
+
+    return res.render("officialReports/reportDetails", {
+      title: "Official Report Details",
+      report: preparedOfficialReport,
+    });
+  } catch (e) {
+    return handlePageError(e, res, "Official Report");
+  }
 });
 
 export default router;

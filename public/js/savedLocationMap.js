@@ -2,7 +2,7 @@ const mapElement = document.getElementById("saved-location-map");
 const filterForm = document.getElementById("nearby-report-filter-form");
 const clearFiltersButton = document.getElementById("clear-report-filters");
 
-const createUserReportPopup = (report, savedLocationId) => {
+const createUserReportPopup = (report) => {
   const popup = document.createElement("div");
 
   const category = document.createElement("strong");
@@ -15,10 +15,34 @@ const createUserReportPopup = (report, savedLocationId) => {
   distance.textContent = `${report.distanceInMiles.toFixed(2)} miles away`;
 
   const detailsLink = document.createElement("a");
-  detailsLink.href = `/user-reports/${report._id}?savedLocationId=${savedLocationId}`;
+  detailsLink.href = `/user-reports/${report._id}`;
   detailsLink.textContent = "View Report";
 
   popup.append(category, source, distance, detailsLink);
+
+  return popup;
+};
+
+const createOfficialReportPopup = (report) => {
+  const popup = document.createElement("div");
+
+  const category = document.createElement("strong");
+  category.textContent = report.category;
+
+  const source = document.createElement("p");
+  source.textContent = "Official NYPD Report";
+
+  const crimeType = document.createElement("p");
+  crimeType.textContent = report.crimeType;
+
+  const distance = document.createElement("p");
+  distance.textContent = `${report.distanceInMiles.toFixed(2)} miles away`;
+
+  const detailsLink = document.createElement("a");
+  detailsLink.href = `/official-reports/${report._id}`;
+  detailsLink.textContent = "View Report";
+
+  popup.append(category, source, crimeType, distance, detailsLink);
 
   return popup;
 };
@@ -33,7 +57,6 @@ const loadNearbyUserReports = async (
   message.hidden = true;
   message.textContent = "";
 
-  // Remove only the existing user report markers
   reportLayer.clearLayers();
 
   try {
@@ -46,44 +69,185 @@ const loadNearbyUserReports = async (
 
     const nearbyReports = response.data;
 
-    if (nearbyReports.length === 0) {
-      message.textContent = "No nearby user reports match the selected filters";
-      message.hidden = false;
-      return;
-    }
-
     for (const report of nearbyReports) {
       const reportCoords = [report.latitude, report.longitude];
       const reportMarker = L.circleMarker(reportCoords, {
-        radius: 8,
-        color: "#2563eb",
+        radius: 6,
+        color: "#1d4ed8",
         fillColor: "#3b82f6",
-        fillOpacity: 0.85,
+        weight: 2,
+        fillOpacity: 0.8,
       }).addTo(reportLayer);
 
-      const popup = createUserReportPopup(report, savedLocationId);
+      const popup = createUserReportPopup(report);
 
       reportMarker.bindPopup(popup);
     }
+    return nearbyReports;
   } catch (error) {
     console.error(error);
 
-    if (error.response?.data?.error) {
+    if (error.response && error.response.data && error.response.data.error) {
       message.textContent = error.response.data.error;
     } else {
       message.textContent = "Nearby user reports could not be loaded";
     }
 
     message.hidden = false;
+
+    return [];
   }
 };
 
-const setupReportFilters = (savedLocationId, userReportLayer) => {
+const loadNearbyOfficialReports = async (
+  savedLocationId,
+  officialReportLayer,
+  filters = {},
+) => {
+  const message = document.getElementById("map-message");
+
+  officialReportLayer.clearLayers();
+
+  try {
+    const response = await axios.get(
+      `/saved-locations/${savedLocationId}/nearby-official-reports`,
+      {
+        params: filters,
+      },
+    );
+
+    const nearbyReports = response.data;
+
+    for (const report of nearbyReports) {
+      const reportCoords = [Number(report.latitude), Number(report.longitude)];
+
+      const reportMarker = L.circleMarker(reportCoords, {
+        radius: 4,
+        color: "#b91c1c",
+        fillColor: "#ef4444",
+        weight: 1,
+        fillOpacity: 0.55,
+      }).addTo(officialReportLayer);
+
+      const popup = createOfficialReportPopup(report);
+
+      reportMarker.bindPopup(popup);
+    }
+
+    return nearbyReports;
+  } catch (error) {
+    console.error(error);
+
+    if (error.response && error.response.data && error.response.data.error) {
+      message.textContent = error.response.data.error;
+    } else {
+      message.textContent = "Nearby official reports could not be loaded";
+    }
+
+    message.hidden = false;
+
+    return [];
+  }
+};
+
+const loadNearbyReports = async (
+  savedLocationId,
+  userReportLayer,
+  officialReportLayer,
+  filters = {},
+) => {
+  const message = document.getElementById("map-message");
+
+  message.hidden = true;
+  message.textContent = "";
+
+  const reportFilters = {
+    category: filters.category,
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  };
+
+  let userReports = [];
+  let officialReports = [];
+
+  if (filters.source === "user") {
+    officialReportLayer.clearLayers();
+
+    userReports = await loadNearbyUserReports(
+      savedLocationId,
+      userReportLayer,
+      reportFilters,
+    );
+  } else if (filters.source === "official") {
+    userReportLayer.clearLayers();
+
+    officialReports = await loadNearbyOfficialReports(
+      savedLocationId,
+      officialReportLayer,
+      reportFilters,
+    );
+  } else {
+    userReports = await loadNearbyUserReports(
+      savedLocationId,
+      userReportLayer,
+      reportFilters,
+    );
+
+    officialReports = await loadNearbyOfficialReports(
+      savedLocationId,
+      officialReportLayer,
+      reportFilters,
+    );
+  }
+
+  if (userReports.length === 0 && officialReports.length === 0) {
+    let hasFilters = false;
+
+    if (filters.category) {
+      hasFilters = true;
+    } else if (filters.startDate) {
+      hasFilters = true;
+    } else if (filters.endDate) {
+      hasFilters = true;
+    }
+
+    if (filters.source === "user") {
+      if (hasFilters) {
+        message.textContent =
+          "No nearby user reports match the selected filters";
+      } else {
+        message.textContent = "No nearby user reports found within 1 mile";
+      }
+    } else if (filters.source === "official") {
+      if (hasFilters) {
+        message.textContent =
+          "No nearby official reports match the selected filters";
+      } else {
+        message.textContent = "No nearby official reports found within 1 mile";
+      }
+    } else {
+      if (hasFilters) {
+        message.textContent = "No nearby complaints match the selected filters";
+      } else {
+        message.textContent = "No nearby complaints found within 1 mile";
+      }
+    }
+
+    message.hidden = false;
+  }
+};
+
+const setupReportFilters = (
+  savedLocationId,
+  userReportLayer,
+  officialReportLayer,
+) => {
   if (!filterForm) return;
 
   filterForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    const source = filterForm.elements.source.value.trim();
     const category = filterForm.elements.category.value.trim();
     const startDate = filterForm.elements.startDate.value.trim();
     const endDate = filterForm.elements.endDate.value.trim();
@@ -97,20 +261,69 @@ const setupReportFilters = (savedLocationId, userReportLayer) => {
     }
 
     const filters = {
+      source,
       category,
       startDate,
       endDate,
     };
 
-    await loadNearbyUserReports(savedLocationId, userReportLayer, filters);
+    await loadNearbyReports(
+      savedLocationId,
+      userReportLayer,
+      officialReportLayer,
+      filters,
+    );
   });
 
   if (clearFiltersButton) {
     clearFiltersButton.addEventListener("click", async () => {
       filterForm.reset();
-      await loadNearbyUserReports(savedLocationId, userReportLayer);
+      await loadNearbyReports(
+        savedLocationId,
+        userReportLayer,
+        officialReportLayer,
+      );
     });
   }
+};
+
+const createMapLegend = (map) => {
+  const legend = L.control({
+    position: "bottomleft",
+  });
+
+  legend.onAdd = () => {
+    const legendElement = L.DomUtil.create("div", "map-legend");
+
+    const title = document.createElement("strong");
+    title.textContent = "Map Legend";
+
+    const officialItem = document.createElement("div");
+
+    const officialMarker = document.createElement("span");
+    officialMarker.classList.add("legend-marker", "legend-marker-official");
+
+    const officialText = document.createElement("span");
+    officialText.textContent = "Official NYPD Report";
+
+    officialItem.append(officialMarker, officialText);
+
+    const userItem = document.createElement("div");
+
+    const userMarker = document.createElement("span");
+    userMarker.classList.add("legend-marker", "legend-marker-user");
+
+    const userText = document.createElement("span");
+    userText.textContent = "User Generated Report";
+
+    userItem.append(userMarker, userText);
+
+    legendElement.append(title, officialItem, userItem);
+
+    return legendElement;
+  };
+
+  legend.addTo(map);
 };
 
 const initializeSavedLocationMap = (element) => {
@@ -156,12 +369,15 @@ const initializeSavedLocationMap = (element) => {
     padding: [20, 20],
   });
 
-  // This layer contains only user report markers.
   const userReportLayer = L.layerGroup().addTo(map);
 
-  loadNearbyUserReports(savedLocationId, userReportLayer);
+  const officialReportLayer = L.layerGroup().addTo(map);
 
-  setupReportFilters(savedLocationId, userReportLayer);
+  createMapLegend(map);
+
+  loadNearbyReports(savedLocationId, userReportLayer, officialReportLayer);
+
+  setupReportFilters(savedLocationId, userReportLayer, officialReportLayer);
 };
 
 if (mapElement) {

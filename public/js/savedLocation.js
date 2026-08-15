@@ -2,6 +2,10 @@ const createForm = document.getElementById("create-saved-location-form");
 const editForm = document.getElementById("edit-saved-location-form");
 const deleteButton = document.getElementById("delete-saved-location-button");
 
+const cancelSaveLocationButton = document.getElementById(
+  "cancel-save-location",
+);
+
 const getSavedLocationFormData = (form) => {
   const label = form.elements.label.value.trim();
   const address = form.elements.address.value.trim();
@@ -144,4 +148,10 @@ if (editForm) {
 
 if (deleteButton) {
   deleteButton.addEventListener("click", deleteSavedLocation);
+}
+
+if (cancelSaveLocationButton) {
+  cancelSaveLocationButton.addEventListener("click", () => {
+    window.history.back();
+  });
 }
