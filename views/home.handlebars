@@ -11,13 +11,13 @@
     <div class="overview-cards">
       <article class="overview-card">
         <h3>Saved Locations</h3>
-        <p>{{savedLocationCount}}</p>
+        <p class="overview-count">{{savedLocationCount}}</p>
         <a href="/saved-locations/my-locations">View Saved Locations</a>
       </article>
 
       <article class="overview-card">
         <h3>My User Reports</h3>
-        <p>{{userReportCount}}</p>
+        <p class="overview-count">{{userReportCount}}</p>
         <a href="/user-reports/my-reports">View My Reports</a>
       </article>
 
@@ -38,26 +38,32 @@
       {{#each savedLocations}}
         <article class="saved-location-card">
           <h3>{{label}}</h3>
-          <p>{{address}}</p>
+          <p>
+            <strong>Address:</strong>
+            {{address}}
+          </p>
 
           {{#if tags.length}}
-            <ul>
+            <p><strong>Tags:</strong></p>
+
+            <div class="tag-list">
               {{#each tags}}
-                <li>{{this}}</li>
+                <span class="tag">{{this}}</span>
               {{/each}}
-            </ul>
+            </div>
           {{else}}
-            <p>No tags</p>
+            <p><strong>Tags:</strong> None</p>
           {{/if}}
 
-          <a href="/saved-locations/{{_id}}">View Details</a>
+          <a href="/saved-locations/{{_id}}" class="button-link">View Details</a>
         </article>
       {{/each}}
 
       <article class="saved-location-card add-location-card">
         <h3>Add a Location</h3>
         <p>Save an area that you want to monitor</p>
-        <a href="/saved-locations/create">Save a New Location</a>
+        <a href="/saved-locations/create" class="button-link">Save a New
+          Location</a>
       </article>
     </div>
   </section>
