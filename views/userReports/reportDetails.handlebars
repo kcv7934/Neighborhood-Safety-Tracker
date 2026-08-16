@@ -41,28 +41,25 @@
 </article>
 
 <div class="report-votes">
-  <input
-    type="hidden"
-    id="current-report-vote"
-    value="{{currentVoteType}}"
-  />
-  
+  <input type="hidden" id="current-report-vote" value="{{currentVoteType}}" />
+
   <button
     type="button"
     id="upvote-report-button"
     value="{{report._id}}"
   >Upvote</button>
 
-  <span>Upvotes: <span id="upvote-count">{{voteCounts.upvotes}}</span></span>
+  <span id="upvote-count">
+    {{voteCounts.upvotes}}
+  </span>
 
-  <button
-    type="button"
-    id="downvote-report-button"
-    value="{{report._id}}"
-  >Downvote</button>
+  <button type="button" id="downvote-report-button" value="{{report._id}}">
+    Downvote
+  </button>
 
-  <span>Downvotes:
-    <span id="downvote-count">{{voteCounts.downvotes}}</span></span>
+  <span id="downvote-count">
+    {{voteCounts.downvotes}}
+  </span>
 </div>
 
 <div id="report-vote-message" class="form-message" role="alert" hidden></div>
@@ -142,6 +139,47 @@
             <strong>Last Updated:</strong>
             {{updatedAt}}
           </p>
+
+          <div class="comment-votes">
+            <input
+              type="hidden"
+              id="current-comment-vote-{{_id}}"
+              value="{{currentVoteType}}"
+            />
+
+            <button
+              type="button"
+              id="upvote-comment-button-{{_id}}"
+              class="upvote-comment-button"
+              value="{{_id}}"
+            >
+              Upvote
+            </button>
+
+            <span id="comment-upvote-count-{{_id}}">
+              {{voteCounts.upvotes}}
+            </span>
+
+            <button
+              type="button"
+              id="downvote-comment-button-{{_id}}"
+              class="downvote-comment-button"
+              value="{{_id}}"
+            >
+              Downvote
+            </button>
+
+            <span id="comment-downvote-count-{{_id}}">
+              {{voteCounts.downvotes}}
+            </span>
+          </div>
+
+          <div
+            id="comment-vote-message-{{_id}}"
+            class="form-message"
+            role="alert"
+            hidden
+          ></div>
 
           {{#if isOwner}}
             <div class="page-actions">

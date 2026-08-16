@@ -18,3 +18,4 @@ export const savedLocations = getCollectionFn("savedLocations");
 export const officialReports = getCollectionFn("officialReports");
 export const comments = getCollectionFn("comments");
 export const reportVotes = getCollectionFn("reportVotes");
+export const commentVotes = getCollectionFn("commentVotes");

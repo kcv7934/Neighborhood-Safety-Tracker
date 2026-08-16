@@ -49,7 +49,7 @@
 }
 
 .comment-card .page-actions {
-  margin-top: 10px;
+  margin-top: 14px;
 }
 
 .edit-comment-button {
@@ -77,35 +77,55 @@
   border-radius: 5px;
 }
 
-#upvote-report-button {
+#upvote-report-button,
+.upvote-comment-button {
   color: #ffffff;
   background-color: #16a34a;
   border: 1px solid #15803d;
   border-radius: 5px;
 }
 
-#upvote-report-button:hover {
+#upvote-report-button:hover,
+.upvote-comment-button:hover {
   background-color: #15803d;
 }
 
-#downvote-report-button {
+#downvote-report-button,
+.downvote-comment-button {
   color: #ffffff;
-  background-color: #ef4444;
-  border: 1px solid #dc2626;
+  background-color: #b91c1c;
+  border: 1px solid #991b1b;
   border-radius: 5px;
 }
 
-#downvote-report-button:hover {
-  background-color: #dc2626;
+#downvote-report-button:hover,
+.downvote-comment-button:hover {
+  background-color: #991b1b;
 }
 
 #upvote-report-button:disabled,
-#downvote-report-button:disabled {
+#downvote-report-button:disabled,
+.upvote-comment-button:disabled,
+.downvote-comment-button:disabled {
   opacity: 0.5;
   cursor: default;
 }
 
 #upvote-count,
 #downvote-count {
+  font-weight: bold;
+}
+
+.comment-votes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.comment-votes span {
+  font-size: 15px;
   font-weight: bold;
 }

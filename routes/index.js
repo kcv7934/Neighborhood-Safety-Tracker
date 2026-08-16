@@ -4,6 +4,7 @@ import officialReportRoutes from "./officialReports.js";
 import searchRoutes from "./search.js";
 import commentRoutes from "./comments.js";
 import reportVoteRoutes from "./reportVotes.js";
+import commentVoteRoutes from "./commentVotes.js";
 import * as savedLocationData from "../data/savedLocations.js";
 import * as userReportData from "../data/userReports.js";
 import { handlePageError } from "./errorHandlers.js";
@@ -43,6 +44,7 @@ const constructorMethod = (app) => {
   app.use("/search", searchRoutes);
   app.use("/comments", commentRoutes);
   app.use("/report-votes", reportVoteRoutes);
+  app.use("/comment-votes", commentVoteRoutes);
 
   app.use((req, res) => {
     return res.status(404).render("error", {

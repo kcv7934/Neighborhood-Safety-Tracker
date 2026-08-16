@@ -5,6 +5,7 @@ import { handleApiError, handlePageError } from "./errorHandlers.js";
 import xss from "xss";
 import * as commentData from "../data/comments.js";
 import * as reportVoteData from "../data/reportVotes.js";
+import * as commentVoteData from "../data/commentVotes.js";
 
 const router = Router();
 
@@ -144,25 +145,42 @@ router
 
       const comments = await commentData.getCommentsByReport(id);
 
-      const preparedComments = comments.map((comment) => {
-        return {
+      const preparedComments = [];
+
+      for (const comment of comments) {
+        const commentVoteCounts = await commentVoteData.getCommentVoteCounts(
+          comment._id,
+        );
+
+        const userCommentVote = await commentVoteData.getUserCommentVote(
+          comment._id,
+          TEMP_AUTHOR_ID,
+        );
+
+        let currentCommentVoteType = null;
+
+        if (userCommentVote) currentCommentVoteType = userCommentVote.type;
+
+        preparedComments.push({
           ...comment,
           createdAt: comment.createdAt.toLocaleString(),
           updatedAt: comment.updatedAt.toLocaleString(),
           isOwner: comment.authorId === TEMP_AUTHOR_ID,
-        };
-      });
+          voteCounts: commentVoteCounts,
+          currentVoteType: currentCommentVoteType,
+        });
+      }
 
-      const userVote = await reportVoteData.getUserReportVote(
+      const userReportVote = await reportVoteData.getUserReportVote(
         id,
         TEMP_AUTHOR_ID,
       );
 
-      const voteCounts = await reportVoteData.getReportVoteCounts(id);
+      const reportVoteCounts = await reportVoteData.getReportVoteCounts(id);
 
-      let currentVoteType = null;
+      let currentReportVoteType = null;
 
-      if (userVote) currentVoteType = userVote.type;
+      if (userReportVote) currentReportVoteType = userReportVote.type;
 
       let successMessage = null;
 
@@ -178,8 +196,8 @@ router
         isOwner: userReport.authorId === TEMP_AUTHOR_ID,
         successMessage,
         comments: preparedComments,
-        voteCounts,
-        currentVoteType,
+        voteCounts: reportVoteCounts,
+        currentVoteType: currentReportVoteType,
         partial: "user_report_script",
         stylesheet: "userReports.css",
       });
