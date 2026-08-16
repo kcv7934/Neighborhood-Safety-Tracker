@@ -40,6 +40,33 @@
   </p>
 </article>
 
+<div class="report-votes">
+  <input
+    type="hidden"
+    id="current-report-vote"
+    value="{{currentVoteType}}"
+  />
+  
+  <button
+    type="button"
+    id="upvote-report-button"
+    value="{{report._id}}"
+  >Upvote</button>
+
+  <span>Upvotes: <span id="upvote-count">{{voteCounts.upvotes}}</span></span>
+
+  <button
+    type="button"
+    id="downvote-report-button"
+    value="{{report._id}}"
+  >Downvote</button>
+
+  <span>Downvotes:
+    <span id="downvote-count">{{voteCounts.downvotes}}</span></span>
+</div>
+
+<div id="report-vote-message" class="form-message" role="alert" hidden></div>
+
 <div class="page-actions">
   {{#if isOwner}}
     <a

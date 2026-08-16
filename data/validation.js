@@ -461,3 +461,14 @@ export const validateCommentText = (text) => {
 
   return text;
 };
+
+/* reportVotes validation */
+
+export const validateVoteType = (type) => {
+  type = validateString(type, "vote type").toLowerCase();
+
+  if (type !== "upvote" && type !== "downvote")
+    throw "Vote type must be either upvote or downvote";
+
+  return type
+};

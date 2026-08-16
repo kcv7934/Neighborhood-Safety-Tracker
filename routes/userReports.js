@@ -4,6 +4,7 @@ import * as validation from "../data/validation.js";
 import { handleApiError, handlePageError } from "./errorHandlers.js";
 import xss from "xss";
 import * as commentData from "../data/comments.js";
+import * as reportVoteData from "../data/reportVotes.js";
 
 const router = Router();
 
@@ -135,6 +136,12 @@ router
 
       const userReport = await userReportData.getUserReportById(id);
 
+      const preparedUserReport = {
+        ...userReport,
+        createdAt: userReport.createdAt.toLocaleString(),
+        updatedAt: userReport.updatedAt.toLocaleString(),
+      };
+
       const comments = await commentData.getCommentsByReport(id);
 
       const preparedComments = comments.map((comment) => {
@@ -146,11 +153,16 @@ router
         };
       });
 
-      const preparedUserReport = {
-        ...userReport,
-        createdAt: userReport.createdAt.toLocaleString(),
-        updatedAt: userReport.updatedAt.toLocaleString(),
-      };
+      const userVote = await reportVoteData.getUserReportVote(
+        id,
+        TEMP_AUTHOR_ID,
+      );
+
+      const voteCounts = await reportVoteData.getReportVoteCounts(id);
+
+      let currentVoteType = null;
+
+      if (userVote) currentVoteType = userVote.type;
 
       let successMessage = null;
 
@@ -166,6 +178,8 @@ router
         isOwner: userReport.authorId === TEMP_AUTHOR_ID,
         successMessage,
         comments: preparedComments,
+        voteCounts,
+        currentVoteType,
         partial: "user_report_script",
         stylesheet: "userReports.css",
       });

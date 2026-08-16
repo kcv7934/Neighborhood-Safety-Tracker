@@ -35,8 +35,12 @@
   margin-top: 25px;
 }
 
+#comment-form {
+  max-width: 700px;
+}
+
 .comment-card {
-  max-width: 600px;
+  max-width: 700px;
   padding: 15px;
   margin-top: 15px;
   background-color: #ffffff;
@@ -58,4 +62,50 @@
 .edit-comment-button:hover,
 .edit-comment-button:focus {
   background-color: #3730a3;
+}
+
+.report-votes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  max-width: 700px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+}
+
+#upvote-report-button {
+  color: #ffffff;
+  background-color: #16a34a;
+  border: 1px solid #15803d;
+  border-radius: 5px;
+}
+
+#upvote-report-button:hover {
+  background-color: #15803d;
+}
+
+#downvote-report-button {
+  color: #ffffff;
+  background-color: #ef4444;
+  border: 1px solid #dc2626;
+  border-radius: 5px;
+}
+
+#downvote-report-button:hover {
+  background-color: #dc2626;
+}
+
+#upvote-report-button:disabled,
+#downvote-report-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+#upvote-count,
+#downvote-count {
+  font-weight: bold;
 }
