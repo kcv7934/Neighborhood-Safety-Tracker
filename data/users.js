@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb";
 import { users } from "../config/mongoCollections.js";
 import * as validation from "./validation.js";
-import { geocodeAddress } from "./geocoding.js";
 import { NotFoundError, ForbiddenError } from "./error.js";
 import bcrypt from "bcrypt";
 
@@ -10,15 +9,19 @@ export const createUser = async (
     firstName,
     lastName,
     username,
+    password,
     email,
     state,
     city,
-    age,
-    password
+    age
 ) => {
     if (!firstName || !lastName || !username || !email || !state || !city || !age || !password) {
         throw new Error("All fields are required");
     }
+
+    console.log("Creating user with data:", {
+        password,
+        email});
 
     firstName = validation.validateString(firstName, "firstName");
     lastName = validation.validateString(lastName, "lastName");

@@ -101,12 +101,12 @@ router.get("/:userReportId/edit", async (req, res) => {
       };
     });
 
-    const streetAddress = userReport.address.split(",")[0].trim()
+    const streetAddress = userReport.address.split(",")[0].trim();
 
     const preparedUserReport = {
       ...userReport,
       streetAddress
-    }
+    };
 
     return res.render("userReports/edit", {
       title: "Edit User Report",

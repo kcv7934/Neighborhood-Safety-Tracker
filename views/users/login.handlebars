@@ -1,0 +1,23 @@
+<form id="page-form" class="login" method="post" action="/user/login">
+
+    <div class="form-field">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+    </div>
+
+    <div class="form-field">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>    
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" id="submit_button" name="submit_button">Sign In</button>
+        <a href="/user/register">Don't have an Account? Click here to make one!</a>
+    </div>
+
+    <div id="form-message" class="form-message" role="alert" hidden></div>
+
+    {{#if error}}
+        <div class="form-message" role="alert">{{error}}</div>
+    {{/if}}
+</form>
