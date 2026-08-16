@@ -66,3 +66,74 @@
 {{#if isOwner}}
   <div id="delete-message" class="form-message" role="alert" hidden></div>
 {{/if}}
+
+<section class="comments-section">
+  <h2>Discussion</h2>
+
+  <form id="comment-form" class="page-form">
+    <input
+      type="hidden"
+      id="comment-report-id"
+      name="reportId"
+      value="{{report._id}}"
+    />
+
+    <div class="form-field">
+      <label for="comment-text">Add a Comment</label>
+      <textarea
+        id="comment-text"
+        name="text"
+        maxlength="500"
+        required
+      ></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit">Post Comment</button>
+    </div>
+
+    <div
+      id="comment-form-message"
+      class="form-message"
+      role="alert"
+      hidden
+    ></div>
+  </form>
+
+  <div id="comment-list">
+    {{#if comments.length}}
+      {{#each comments}}
+        <article class="comment-card" data-comment-id="{{_id}}">
+          <p id="comment-text-{{_id}}" class="comment-text">{{text}}</p>
+
+          <p>
+            <strong>Created:</strong>
+            {{createdAt}}
+          </p>
+
+          <p>
+            <strong>Last Updated:</strong>
+            {{updatedAt}}
+          </p>
+
+          {{#if isOwner}}
+            <div class="page-actions">
+              <button
+                type="button"
+                class="edit-comment-button"
+                value="{{_id}}"
+              >Edit</button>
+              <button
+                type="button"
+                class="delete-button delete-comment-button"
+                value="{{_id}}"
+              >Delete</button>
+            </div>
+          {{/if}}
+        </article>
+      {{/each}}
+    {{else}}
+      <p>No comments yet.</p>
+    {{/if}}
+  </div>
+</section>

@@ -3,6 +3,7 @@ import * as userReportData from "../data/userReports.js";
 import * as validation from "../data/validation.js";
 import { handleApiError, handlePageError } from "./errorHandlers.js";
 import xss from "xss";
+import * as commentData from "../data/comments.js";
 
 const router = Router();
 
@@ -134,6 +135,17 @@ router
 
       const userReport = await userReportData.getUserReportById(id);
 
+      const comments = await commentData.getCommentsByReport(id);
+
+      const preparedComments = comments.map((comment) => {
+        return {
+          ...comment,
+          createdAt: comment.createdAt.toLocaleString(),
+          updatedAt: comment.updatedAt.toLocaleString(),
+          isOwner: comment.authorId === TEMP_AUTHOR_ID,
+        };
+      });
+
       const preparedUserReport = {
         ...userReport,
         createdAt: userReport.createdAt.toLocaleString(),
@@ -153,6 +165,7 @@ router
         report: preparedUserReport,
         isOwner: userReport.authorId === TEMP_AUTHOR_ID,
         successMessage,
+        comments: preparedComments,
         partial: "user_report_script",
         stylesheet: "userReports.css",
       });
@@ -186,7 +199,7 @@ router
       if (req.body.description !== undefined) {
         updates.description = xss(req.body.description);
       }
-      
+
       const updatedUserReport = await userReportData.updateUserReport(
         id,
         TEMP_AUTHOR_ID,

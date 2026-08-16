@@ -30,3 +30,32 @@
 .report-details h2 {
   margin-top: 10px;
 }
+
+.comments-section {
+  margin-top: 25px;
+}
+
+.comment-card {
+  max-width: 600px;
+  padding: 15px;
+  margin-top: 15px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+}
+
+.comment-card .page-actions {
+  margin-top: 10px;
+}
+
+.edit-comment-button {
+  color: #ffffff;
+  background-color: #4f46e5;
+  border: 1px solid #4338ca;
+  border-radius: 5px;
+}
+
+.edit-comment-button:hover,
+.edit-comment-button:focus {
+  background-color: #3730a3;
+}

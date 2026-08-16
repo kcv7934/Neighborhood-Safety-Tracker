@@ -452,3 +452,12 @@ export const validateSource = (source) => {
   return source;
 };
 
+/* comments validation */
+
+export const validateCommentText = (text) => {
+  text = validateString(text, "Comment Text");
+
+  if (text.length > 500) throw "Comment cannot be more than 500 characters";
+
+  return text;
+};

@@ -2,6 +2,7 @@ import userReportRoutes from "./userReports.js";
 import savedLocationRoutes from "./savedLocations.js";
 import officialReportRoutes from "./officialReports.js";
 import searchRoutes from "./search.js";
+import commentRoutes from "./comments.js";
 import * as savedLocationData from "../data/savedLocations.js";
 import * as userReportData from "../data/userReports.js";
 import { handlePageError } from "./errorHandlers.js";
@@ -39,6 +40,7 @@ const constructorMethod = (app) => {
   app.use("/saved-locations", savedLocationRoutes);
   app.use("/official-reports", officialReportRoutes);
   app.use("/search", searchRoutes);
+  app.use("/comments", commentRoutes);
 
   app.use((req, res) => {
     return res.status(404).render("error", {
