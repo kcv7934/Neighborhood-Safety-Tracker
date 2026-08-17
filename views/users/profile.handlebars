@@ -1,0 +1,59 @@
+<h1>Profile</h1>
+
+{{#if successMessage}}
+  <p class="status-message" role="status">
+    {{successMessage}}
+  </p>
+{{/if}}
+
+<article class="report-details">
+  <h2>{{user.username}}</h2>
+
+  <p>
+    <strong>First Name:</strong>
+    {{user.firstName}}
+  </p>
+
+  <p>
+    <strong>Last Name:</strong>
+    {{user.lastName}}
+  </p>
+
+  <p>
+    <strong>Email:</strong>
+    {{user.email}}
+  </p>
+
+  <p>
+    <strong>State:</strong>
+    {{user.state}}
+  </p>
+    
+  <p>
+    <strong>Age:</strong>
+    {{user.age}}
+  </p>
+</article>
+
+<div class="page-actions">
+    <a class="button-link" href="/user/profile/edit">Edit Profile</a>
+
+    <a class="button-link" href="/user/logout">Sign Out</a>
+
+    <form id="delete-user-form" method="post" action="/user/profile/delete">
+        <input type="hidden" name="_method" value="delete">
+        <button
+        type="submit"
+        class="delete-button"
+        id="delete-user-button"
+        >Delete User Profile</button>
+    </form>
+
+  <a href="/">Dashboard</a>
+</div>
+
+<div id="delete-message" class="form-message" role="alert" hidden></div>
+
+{{#if error}}
+  <div class="form-message" role="alert">{{error}}</div>
+{{/if}}

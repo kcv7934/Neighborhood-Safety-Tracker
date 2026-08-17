@@ -11,6 +11,22 @@ const myMiddleware = (app) => {
 
         next();
     });
+
+    app.use("/user/login", (req, res, next) => {
+        if (req.session.user) {
+            return res.redirect("/");
+        }
+
+        next();
+    });
+    
+    app.use("/user/register", (req, res, next) => {
+        if (req.session.user) {
+            return res.redirect("/");
+        }
+
+        next();
+    });
 };
 
 export default myMiddleware;

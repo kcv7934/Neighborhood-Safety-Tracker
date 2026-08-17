@@ -19,10 +19,6 @@ export const createUser = async (
         throw new Error("All fields are required");
     }
 
-    console.log("Creating user with data:", {
-        password,
-        email});
-
     firstName = validation.validateString(firstName, "firstName");
     lastName = validation.validateString(lastName, "lastName");
     username = validation.validateString(username, "username");
@@ -114,7 +110,7 @@ export const editUser = async (userId, updatedFields) => {
     userId = validation.validateId(userId, "userId");
     updatedFields = validation.validateObject(updatedFields, "updatedFields");
 
-    const validKeys = ["firstName", "lastName", "username", "email", "state", "city", "age"];
+    const validKeys = ["firstName", "lastName", "email", "state", "city", "age"];
     updatedFields = validation.validateObjectKeys(updatedFields, validKeys);
 
     const usersCollection = await users();
@@ -125,29 +121,34 @@ export const editUser = async (userId, updatedFields) => {
         throw new NotFoundError("User not found");
     }
 
-    if (updatedFields.username && updatedFields.username !== user.username) {
-        const existingUser = await usersCollection.findOne({ username: updatedFields.username });
-
-        if (existingUser) {
-            throw new Error("Username already exists");
-        }
-
-        await usersCollection.updateOne(
-            { _id: new ObjectId(userId) },
-            { $set: { username: updatedFields.username } }
-        );
-    }
+    let fieldChanged = false;
 
     for (const key of Object.keys(updatedFields)) {
-        if (key === "username") continue;
-
         if (updatedFields[key] !== user[key]) {
             await usersCollection.updateOne(
                 { _id: new ObjectId(userId) },
                 { $set: { [key]: updatedFields[key] } }
             );
+            fieldChanged = true;
         }
     }
 
+    if (!fieldChanged) {
+        throw new Error("No fields were changed");
+    }
+
     return { userUpdated: true, userId: userId };
+};
+
+export const deleteUser = async (userId) => {
+    userId = validation.validateId(userId, "userId");
+
+    const usersCollection = await users();
+    const deletionInfo = await usersCollection.deleteOne({ _id: new ObjectId(userId) });
+
+    if (deletionInfo.deletedCount === 0) {
+        throw new NotFoundError('Could not delete user account. Please try again later.');
+    }
+
+    return { userDeleted: true, userId: userId };
 };

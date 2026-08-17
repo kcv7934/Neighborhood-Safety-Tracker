@@ -321,8 +321,6 @@ export const validateEmail = (email) => {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  console.log("Validating email:", email);
-
   if (!emailRegex.test(email)) {
     throw "Email must be a valid email address";
   }

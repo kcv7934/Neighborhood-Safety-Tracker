@@ -1,3 +1,9 @@
+{{#if successMessage}}
+  <p class="status-message" role="status">
+    {{successMessage}}
+  </p>
+{{/if}}
+
 <form id="page-form" class="login" method="post" action="/user/login">
 
     <div class="form-field">

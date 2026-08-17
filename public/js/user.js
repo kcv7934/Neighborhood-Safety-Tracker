@@ -1,5 +1,8 @@
 const form = document.getElementById('page-form');
 const errorMessage = document.getElementById('form-message');
+const deleteButton = document.getElementById('delete-user-button');
+const deleteMessage = document.getElementById('delete-message');
+const deleteUserForm = document.getElementById('delete-user-form');
 
 if (form && errorMessage) {
     if (form.className === 'login') {
@@ -94,5 +97,65 @@ if (form && errorMessage) {
                 form.submit();
             }
         });
+    } else if (form.className === 'profile-edit') {
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            errorMessage.textContent = '';
+            errorMessage.hidden = true;
+
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const age = document.getElementById('age').value.trim();
+            const state = document.getElementById('state').value.trim();
+            const city = document.getElementById('city').value.trim();
+
+            const inputFields = [firstName, lastName, email, age, state, city];
+            const inputFieldNames = ['First Name', 'Last Name', 'Email', 'Age', 'State', 'City'];
+
+            for (let i = 0; i < inputFields.length; i++) {
+                if (!inputFields[i]) {
+                    errorMessage.textContent = `${inputFieldNames[i]} is required.`;
+                    errorMessage.hidden = false;
+                }
+            }
+
+            if (!/^[a-zA-Z]+$/.test(firstName)) {
+                errorMessage.textContent = 'First name must contain only letters.';
+                errorMessage.hidden = false;
+            }else if (!/^[a-zA-Z]+$/.test(lastName)) {
+                errorMessage.textContent = 'Last name must contain only letters.';
+                errorMessage.hidden = false;
+            }else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                errorMessage.textContent = 'Invalid email format.';
+                errorMessage.hidden = false;
+            }else if (isNaN(age) || age < 0 || age > 120) {
+                errorMessage.textContent = 'Age must be a number between 0 and 120.';
+                errorMessage.hidden = false;
+            }else if (state.length !== 2 || !/^[A-Z]{2}$/.test(state)) {
+                errorMessage.textContent = 'State must be a valid 2-letter abbreviation.';
+                errorMessage.hidden = false;
+            }else if (!/^[a-zA-Z ]+$/.test(city)) {
+                errorMessage.textContent = 'City must contain only letters and spaces.';
+                errorMessage.hidden = false;
+            }
+
+            if (errorMessage.hidden) {
+                form.submit();
+            }
+        });
     }
+}
+
+if (deleteUserForm) {
+    deleteUserForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        deleteMessage.textContent = '';
+        deleteMessage.hidden = true;
+
+        const confirmed = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
+        if (!confirmed) return;
+
+        deleteUserForm.submit();
+    });
 }
