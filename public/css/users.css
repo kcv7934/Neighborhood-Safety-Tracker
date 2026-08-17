@@ -1,0 +1,99 @@
+.page-form {
+    max-width: 500px;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+  }
+  
+.form-field {
+  margin-bottom: 15px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 50%;
+}
+
+.form-field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-actions button {
+  color: #ffffff;
+  background-color: #2962ff;
+  border: 1px solid #2962ff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.form-actions button:hover {
+  background-color: #0039cb;
+}
+
+.form-message {
+  margin-top: 15px;
+  color: #c22020;
+}
+
+.report-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.report-card,
+.report-details {
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.report-details {
+  max-width: 700px;
+  margin-bottom: 20px;
+}
+
+.report-card h2,
+.report-details h2 {
+  margin-top: 10px;
+}
+
+.status-message {
+  padding: 10px;
+  color: #1b5e20;
+  background-color: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 5px;
+}
+
+.page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+}
+
+.delete-button {
+  background-color: #ef4444;
+  color: #ffffff;
+  border: 1px solid #dc2626;
+  border-radius: 5px;
+}
+
+.delete-button:hover, .delete-button:focus {
+  background-color: #dc2626;
+}

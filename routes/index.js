@@ -1,12 +1,11 @@
 import userReportRoutes from "./userReports.js";
 import savedLocationRoutes from "./savedLocations.js";
+import userRoutes from "./users.js";
 import officialReportRoutes from "./officialReports.js";
 import searchRoutes from "./search.js";
 import * as savedLocationData from "../data/savedLocations.js";
 import * as userReportData from "../data/userReports.js";
 import { handlePageError } from "./errorHandlers.js";
-
-const TEMP_AUTHOR_ID = "687000000000000000000001";
 
 const DASHBOARD_LOCATION_LIMIT = 3;
 
@@ -14,7 +13,7 @@ const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
     try {
       const savedLocations =
-        await savedLocationData.getSavedLocationsByUser(TEMP_AUTHOR_ID);
+        await savedLocationData.getSavedLocationsByUser(req.session.user.id);
 
       const dashboardSavedLocations = savedLocations.slice(
         0,
@@ -22,7 +21,7 @@ const constructorMethod = (app) => {
       );
 
       const userReports =
-        await userReportData.getUserReportsByAuthor(TEMP_AUTHOR_ID);
+        await userReportData.getUserReportsByAuthor(req.session.user.id);
 
       return res.render("home", {
         title: "Neighborhood Safety Tracker",
@@ -36,6 +35,7 @@ const constructorMethod = (app) => {
   });
 
   app.use("/user-reports", userReportRoutes);
+  app.use("/user", userRoutes);
   app.use("/saved-locations", savedLocationRoutes);
   app.use("/official-reports", officialReportRoutes);
   app.use("/search", searchRoutes);

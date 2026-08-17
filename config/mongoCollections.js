@@ -15,4 +15,5 @@ const getCollectionFn = (collection) => {
 
 export const userReports = getCollectionFn("userReports");
 export const savedLocations = getCollectionFn("savedLocations");
+export const users = getCollectionFn("users");
 export const officialReports = getCollectionFn("officialReports");
