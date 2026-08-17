@@ -358,3 +358,32 @@ export const searchUserReports = async ({
 
   return reports;
 };
+
+export const hideUserReport = async (reportId) => {
+  reportId = validation.validateId(reportId, "reportId");
+
+  const userReportsCollection = await userReports();
+
+  const updatedUserReport = await userReportsCollection.findOneAndUpdate(
+    {
+      _id: new ObjectId(reportId),
+    },
+    {
+      $set: {
+        status: "hidden",
+        updatedAt: new Date(),
+      },
+    },
+    {
+      returnDocument: "after",
+    },
+  );
+
+  if (!updateUserReport)
+    throw new NotFoundError(`No user report found with id '${reportId}'`);
+
+  updatedUserReport._id = updatedUserReport._id.toString();
+  updatedUserReport.authorId = updatedUserReport.authorId.toString();
+
+  return updatedUserReport;
+};

@@ -8,7 +8,10 @@ export const voteOnUserReport = async (reportId, userId, type) => {
   userId = validation.validateId(userId, "userId");
   type = validation.validateVoteType(type);
 
-  await userReportData.getUserReportById(reportId);
+  const userReport = await userReportData.getUserReportById(reportId);
+
+  if (userReport.authorId === userId)
+    throw "You cannot vote on your own report";
 
   const reportVotesCollection = await reportVotes();
 

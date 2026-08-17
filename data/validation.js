@@ -470,5 +470,21 @@ export const validateVoteType = (type) => {
   if (type !== "upvote" && type !== "downvote")
     throw "Vote type must be either upvote or downvote";
 
-  return type
+  return type;
+};
+
+/* reportFlags validation */
+
+export const validFlagReasons = ["Misinformation", "Inappropriate Report", "Other"];
+
+export const validateFlagReason = (reason) => {
+  reason = validateString(reason, "flag reason");
+
+  const allowedFlagReason = validFlagReasons.find((validReason) => {
+    return validReason.toLowerCase() === reason.toLowerCase();
+  });
+
+  if (!allowedFlagReason) throw `Flag must be one of: ${validFlagReasons.join(", ")}`;
+
+  return allowedFlagReason;
 };

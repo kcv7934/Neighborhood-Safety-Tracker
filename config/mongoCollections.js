@@ -19,3 +19,4 @@ export const officialReports = getCollectionFn("officialReports");
 export const comments = getCollectionFn("comments");
 export const reportVotes = getCollectionFn("reportVotes");
 export const commentVotes = getCollectionFn("commentVotes");
+export const reportFlags = getCollectionFn("reportFlags");

@@ -8,7 +8,9 @@ export const voteOnComment = async (commentId, userId, type) => {
   userId = validation.validateId(userId, "userId");
   type = validation.validateVoteType(type);
 
-  await commentData.getCommentById(commentId);
+  const comment = await commentData.getCommentById(commentId);
+
+  if (comment.authorId === userId) throw "You cannot vote on your own comment";
 
   const commentVotesCollection = await commentVotes();
 

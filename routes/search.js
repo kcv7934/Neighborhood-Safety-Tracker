@@ -8,11 +8,18 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
+    let statusMessage = null;
+
+    if (req.query.reportHidden === "true") {
+      statusMessage =
+        "The report was hidden because it reached the flag threshold.";
+    }
     return res.render("search", {
       title: "Search Complaints",
       boroughs: validation.validBoroughs,
       categories: validation.validCategories,
       officialOnlyCategories: validation.officialOnlyCategories,
+      statusMessage,
       stylesheet: "search.css",
     });
   } catch (e) {

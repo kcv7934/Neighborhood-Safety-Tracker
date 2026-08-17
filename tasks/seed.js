@@ -3,16 +3,39 @@ import {
   userReports,
   officialReports,
   savedLocations,
+  comments,
+  reportFlags,
+  reportVotes,
+  commentVotes,
 } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
 import { queryOfficialReportsFromDB } from "../data/officialReports.js";
 import * as validation from "../data/validation.js";
+
+const CURRENT_TEST_USER_ID = new ObjectId("687000000000000000000001");
+const OTHER_USER_ID = new ObjectId("687000000000000000000002");
+const THIRD_USER_ID = new ObjectId("687000000000000000000003");
+const FOURTH_USER_ID = new ObjectId("687000000000000000000004");
+const FIFTH_USER_ID = new ObjectId("687000000000000000000005");
+const SIXTH_USER_ID = new ObjectId("687000000000000000000006");
+
+const FLAG_TEST_REPORT_ID = new ObjectId("687000000000000000000101");
+
+const COMMENT_TEST_REPORT_ID = new ObjectId("687000000000000000000102");
+
+const CURRENT_USER_COMMENT_ID = new ObjectId("687000000000000000000201");
+
+const THIRD_USER_COMMENT_ID = new ObjectId("687000000000000000000202");
+
+const FOURTH_USER_COMMENT_ID = new ObjectId("687000000000000000000203");
 
 const seedUserReports = async () => {
   const userReportsCollection = await userReports();
 
   // TODO: temporary authorId until users collection is implemented
   const testAuthorId = new ObjectId("687000000000000000000001");
+  const otherAuthorId = new ObjectId("687000000000000000000002");
+  const thirdAuthorId = new ObjectId("687000000000000000000003");
 
   const daysAgo = (days) => {
     const date = new Date();
@@ -58,7 +81,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(3),
     },
     {
-      authorId: testAuthorId,
+      authorId: otherAuthorId,
       category: "HARASSMENT",
       address: "350 Fifth Avenue",
       borough: "MANHATTAN",
@@ -82,7 +105,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(7),
     },
     {
-      authorId: testAuthorId,
+      authorId: thirdAuthorId,
       category: "BURGLARY",
       address: "500 Bedford Avenue",
       borough: "BROOKLYN",
@@ -94,7 +117,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(10),
     },
     {
-      authorId: testAuthorId,
+      authorId: otherAuthorId,
       category: "ROBBERY",
       address: "90 Queens Boulevard",
       borough: "QUEENS",
@@ -130,7 +153,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(18),
     },
     {
-      authorId: testAuthorId,
+      authorId: thirdAuthorId,
       category: "DRUG OFFENSE",
       address: "700 Grand Concourse",
       borough: "BRONX",
@@ -202,7 +225,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(40),
     },
     {
-      authorId: testAuthorId,
+      authorId: otherAuthorId,
       category: "ARSON",
       address: "120 Bay Street",
       borough: "STATEN ISLAND",
@@ -274,7 +297,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(70),
     },
     {
-      authorId: testAuthorId,
+      authorId: thirdAuthorId,
       category: "ROBBERY",
       address: "110 East 125th Street",
       borough: "MANHATTAN",
@@ -335,9 +358,183 @@ const seedUserReports = async () => {
       createdAt: daysAgo(4),
       updatedAt: daysAgo(4),
     },
+
+    {
+      _id: FLAG_TEST_REPORT_ID,
+      authorId: OTHER_USER_ID,
+      category: "ROBBERY",
+      address: "250 Broadway",
+      borough: "MANHATTAN",
+      description: "Test report with four existing flags.",
+      latitude: 40.7132,
+      longitude: -74.0077,
+      status: "visible",
+      createdAt: daysAgo(2),
+      updatedAt: daysAgo(2),
+    },
+    {
+      _id: COMMENT_TEST_REPORT_ID,
+      authorId: OTHER_USER_ID,
+      category: "VANDALISM",
+      address: "300 Atlantic Avenue",
+      borough: "BROOKLYN",
+      description: "Test report with several existing comments.",
+      latitude: 40.6885,
+      longitude: -73.9815,
+      status: "visible",
+      createdAt: daysAgo(3),
+      updatedAt: daysAgo(3),
+    },
   ];
 
   await userReportsCollection.insertMany(userReportData);
+};
+
+const seedComments = async () => {
+  const commentsCollection = await comments();
+
+  const currentDate = new Date();
+
+  const commentData = [
+    {
+      _id: CURRENT_USER_COMMENT_ID,
+      reportId: COMMENT_TEST_REPORT_ID,
+      authorId: CURRENT_TEST_USER_ID,
+      text: "This is a comment created by the current test user.",
+      createdAt: currentDate,
+      updatedAt: currentDate,
+    },
+    {
+      _id: THIRD_USER_COMMENT_ID,
+      reportId: COMMENT_TEST_REPORT_ID,
+      authorId: THIRD_USER_ID,
+      text: "I also noticed damage at this location.",
+      createdAt: currentDate,
+      updatedAt: currentDate,
+    },
+    {
+      _id: FOURTH_USER_COMMENT_ID,
+      reportId: COMMENT_TEST_REPORT_ID,
+      authorId: FOURTH_USER_ID,
+      text: "Thanks for reporting this incident.",
+      createdAt: currentDate,
+      updatedAt: currentDate,
+    },
+  ];
+
+  await commentsCollection.insertMany(commentData);
+};
+
+const seedReportVotes = async () => {
+  const reportVotesCollection = await reportVotes();
+
+  const currentDate = new Date();
+
+  const reportVoteData = [
+    {
+      reportId: COMMENT_TEST_REPORT_ID,
+      userId: CURRENT_TEST_USER_ID,
+      type: "upvote",
+      createdAt: currentDate,
+      updatedAt: currentDate,
+    },
+    {
+      reportId: COMMENT_TEST_REPORT_ID,
+      userId: THIRD_USER_ID,
+      type: "upvote",
+      createdAt: currentDate,
+      updatedAt: currentDate,
+    },
+    {
+      reportId: COMMENT_TEST_REPORT_ID,
+      userId: FOURTH_USER_ID,
+      type: "downvote",
+      createdAt: currentDate,
+      updatedAt: currentDate,
+    },
+  ];
+
+  await reportVotesCollection.insertMany(reportVoteData);
+};
+
+const seedCommentVotes = async () => {
+  const commentVotesCollection = await commentVotes();
+
+  const currentDate = new Date();
+
+  const commentVoteData = [
+    {
+      commentId: THIRD_USER_COMMENT_ID,
+      userId: CURRENT_TEST_USER_ID,
+      type: "upvote",
+      createdAt: currentDate,
+      updatedAt: currentDate,
+    },
+    {
+      commentId: THIRD_USER_COMMENT_ID,
+      userId: FIFTH_USER_ID,
+      type: "upvote",
+      createdAt: currentDate,
+      updatedAt: currentDate,
+    },
+    {
+      commentId: FOURTH_USER_COMMENT_ID,
+      userId: CURRENT_TEST_USER_ID,
+      type: "downvote",
+      createdAt: currentDate,
+      updatedAt: currentDate,
+    },
+    {
+      commentId: FOURTH_USER_COMMENT_ID,
+      userId: SIXTH_USER_ID,
+      type: "downvote",
+      createdAt: currentDate,
+      updatedAt: currentDate,
+    },
+  ];
+
+  await commentVotesCollection.insertMany(commentVoteData);
+};
+
+const seedReportFlags = async () => {
+  const reportFlagsCollection = await reportFlags();
+
+  const currentDate = new Date();
+
+  const reportFlagData = [
+    {
+      reportId: FLAG_TEST_REPORT_ID,
+      userId: THIRD_USER_ID,
+      reason: "Misinformation",
+      createdAt: currentDate,
+    },
+    {
+      reportId: FLAG_TEST_REPORT_ID,
+      userId: FOURTH_USER_ID,
+      reason: "Misinformation",
+      createdAt: currentDate,
+    },
+    {
+      reportId: FLAG_TEST_REPORT_ID,
+      userId: FIFTH_USER_ID,
+      reason: "Inappropriate Content",
+      createdAt: currentDate,
+    },
+    {
+      reportId: FLAG_TEST_REPORT_ID,
+      userId: SIXTH_USER_ID,
+      reason: "Other",
+      createdAt: currentDate,
+    },
+    {
+      reportId: COMMENT_TEST_REPORT_ID,
+      userId: CURRENT_TEST_USER_ID,
+      reason: "Misinformation",
+      createdAt: currentDate,
+    },
+  ];
+
+  await reportFlagsCollection.insertMany(reportFlagData);
 };
 
 const seedSavedLocations = async () => {
@@ -345,6 +542,8 @@ const seedSavedLocations = async () => {
 
   // Same temporary user used for user reports
   const testUserId = new ObjectId("687000000000000000000001");
+  const otherUserId = new ObjectId("687000000000000000000002");
+  const thirdUserId = new ObjectId("687000000000000000000003");
 
   const savedLocationData = [
     {
@@ -387,6 +586,22 @@ const seedSavedLocations = async () => {
       longitude: -74.076,
       tags: ["Gym"],
     },
+    {
+      userId: otherUserId,
+      label: "Other User Home",
+      address: "476 Fifth Avenue, Manhattan, NY",
+      latitude: 40.7532,
+      longitude: -73.9822,
+      tags: ["Home"],
+    },
+    {
+      userId: thirdUserId,
+      label: "Other User Work",
+      address: "500 Bedford Avenue, Brooklyn, NY",
+      latitude: 40.7081,
+      longitude: -73.9571,
+      tags: ["Work"],
+    },
   ];
 
   await savedLocationsCollection.insertMany(savedLocationData);
@@ -422,6 +637,10 @@ const main = async () => {
   await seedUserReports();
   await seedSavedLocations();
   await seedOfficialReports();
+  await seedComments();
+  await seedReportFlags();
+  await seedReportVotes();
+  await seedCommentVotes();
 
   console.log("Database seeded successfully");
 

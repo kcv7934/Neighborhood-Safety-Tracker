@@ -6,6 +6,7 @@ import xss from "xss";
 import * as commentData from "../data/comments.js";
 import * as reportVoteData from "../data/reportVotes.js";
 import * as commentVoteData from "../data/commentVotes.js";
+import * as reportFlagData from "../data/reportFlags.js";
 
 const router = Router();
 
@@ -182,6 +183,13 @@ router
 
       if (userReportVote) currentReportVoteType = userReportVote.type;
 
+      const userReportFlag = await reportFlagData.getUserReportFlag(
+        id,
+        TEMP_AUTHOR_ID,
+      );
+
+      const hasFlagged = userReportFlag ? true : false;
+
       let successMessage = null;
 
       if (req.query.created === "true") {
@@ -198,6 +206,8 @@ router
         comments: preparedComments,
         voteCounts: reportVoteCounts,
         currentVoteType: currentReportVoteType,
+        hasFlagged,
+        flagReasons: validation.validFlagReasons,
         partial: "user_report_script",
         stylesheet: "userReports.css",
       });
