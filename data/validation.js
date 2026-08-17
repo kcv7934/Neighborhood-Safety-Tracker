@@ -157,6 +157,16 @@ export const validStates = [
   "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
 ];
 
+export const officialOnlyCategories = [
+  "CHILD-RELATED OFFENSE",
+  "PUBLIC ADMINISTRATION OFFENSE",
+];
+
+export const validSearchCategories = [
+  ...validCategories,
+  ...officialOnlyCategories,
+];
+
 export const validateCategory = (category) => {
   category = validateString(category, "category");
 
@@ -327,3 +337,151 @@ export const validateEmail = (email) => {
 
   return email.toLowerCase();
 };
+/* official crime reports validation */
+
+export const validatePrecinct = (precinct) => {
+  precinct = validateString(precinct, "precinct");
+
+  if (!/^\d{1,3}$/.test(precinct)) {
+    throw "Precinct must be a number between 1 and 3 digits";
+  }
+
+  return String(Number(precinct));
+};
+
+export const validateSortOrder = (sortOrder) => {
+  sortOrder = validateString(sortOrder, "sortOrder").toLowerCase();
+
+  if (sortOrder !== "asc" && sortOrder !== "desc") {
+    throw "sortOrder must be either asc or desc";
+  }
+
+  return sortOrder;
+};
+
+export const validateOfficialReportSortBy = (sortBy) => {
+  sortBy = validateString(sortBy, "sortBy");
+
+  const validSortFields = ["date", "borough", "precinct", "category"];
+
+  if (!validSortFields.includes(sortBy))
+    throw `sortBy must be one of: ${validSortFields.join(", ")}`;
+
+  return sortBy;
+};
+
+export const validateSearchCategory = (category) => {
+  category = validateString(category, "category");
+
+  const matchingCategory = validSearchCategories.find(
+    (validCategory) => validCategory.toLowerCase() === category.toLowerCase(),
+  );
+
+  if (!matchingCategory)
+    throw `Category must be one of: ${validSearchCategories.join(", ")}`;
+
+  return matchingCategory;
+};
+
+export const mapOfficialCrimeCategory = (crimeType) => {
+  if (crimeType === undefined || crimeType === null || crimeType === "(null)") {
+    return "OTHER";
+  }
+
+  crimeType = validateString(crimeType, "crimeType");
+
+  const categoryMap = {
+    "ADMINISTRATIVE CODE": "OTHER",
+    "ALCOHOLIC BEVERAGE CONTROL LAW": "PUBLIC ORDER OFFENSE",
+    "ANTICIPATORY OFFENSES": "OTHER",
+
+    ARSON: "ARSON",
+
+    "ASSAULT 3 & RELATED OFFENSES": "ASSAULT",
+    "FELONY ASSAULT": "ASSAULT",
+    "OFFENSES AGAINST THE PERSON": "ASSAULT",
+
+    "BURGLAR'S TOOLS": "BURGLARY",
+    BURGLARY: "BURGLARY",
+
+    "CANNABIS RELATED OFFENSES": "DRUG OFFENSE",
+    "DANGEROUS DRUGS": "DRUG OFFENSE",
+
+    "CHILD ABANDONMENT/NON SUPPORT 1": "CHILD-RELATED OFFENSE",
+    "OFFENSES RELATED TO CHILDREN": "CHILD-RELATED OFFENSE",
+
+    "CRIMINAL MISCHIEF & RELATED OF": "VANDALISM",
+
+    "CRIMINAL TRESPASS": "TRESPASSING",
+
+    "DANGEROUS WEAPONS": "WEAPONS OFFENSE",
+    "UNLAWFUL POSS. WEAP. ON SCHOOL": "WEAPONS OFFENSE",
+
+    "DISORDERLY CONDUCT": "PUBLIC ORDER OFFENSE",
+    GAMBLING: "PUBLIC ORDER OFFENSE",
+    "LOITERING/GAMBLING (CARDS, DIC": "PUBLIC ORDER OFFENSE",
+    "OFF. AGNST PUB ORD SENSBLTY &": "PUBLIC ORDER OFFENSE",
+    "OFFENSES AGAINST PUBLIC SAFETY": "PUBLIC ORDER OFFENSE",
+    "PROSTITUTION & RELATED OFFENSES": "PUBLIC ORDER OFFENSE",
+
+    "ESCAPE 3": "OTHER",
+
+    FORGERY: "FRAUD",
+    FRAUDS: "FRAUD",
+    "FRAUDULENT ACCOSTING": "FRAUD",
+    "OFFENSES INVOLVING FRAUD": "FRAUD",
+    "THEFT-FRAUD": "FRAUD",
+
+    "GRAND LARCENY": "THEFT",
+    "OTHER OFFENSES RELATED TO THEFT": "THEFT",
+    "PETIT LARCENY": "THEFT",
+    "POSSESSION OF STOLEN PROPERTY": "THEFT",
+    JOSTLING: "THEFT",
+
+    "GRAND LARCENY OF MOTOR VEHICLE": "MOTOR VEHICLE THEFT",
+    "PETIT LARCENY OF MOTOR VEHICLE": "MOTOR VEHICLE THEFT",
+    "UNAUTHORIZED USE OF A VEHICLE": "MOTOR VEHICLE THEFT",
+
+    "HARRASSMENT 2": "HARASSMENT",
+
+    "HOMICIDE-NEGLIGENT,UNCLASSIFIE": "HOMICIDE",
+    "HOMICIDE-NEGLIGENT-VEHICLE": "HOMICIDE",
+    "MURDER & NON-NEGL. MANSLAUGHTER": "HOMICIDE",
+
+    "INTOXICATED & IMPAIRED DRIVING": "IMPAIRED DRIVING",
+    "INTOXICATED/IMPAIRED DRIVING": "IMPAIRED DRIVING",
+
+    "KIDNAPPING & RELATED OFFENSES": "KIDNAPPING",
+
+    "OFFENSES AGAINST PUBLIC ADMINI": "PUBLIC ADMINISTRATION OFFENSE",
+
+    RAPE: "SEXUAL OFFENSE",
+    ROBBERY: "ROBBERY",
+    "SEX CRIMES": "SEXUAL OFFENSE",
+
+    "OTHER TRAFFIC INFRACTION": "TRAFFIC OFFENSE",
+    "VEHICLE AND TRAFFIC LAWS": "TRAFFIC OFFENSE",
+
+    "MISCELLANEOUS PENAL LAW": "OTHER",
+    "NEW YORK CITY HEALTH CODE": "OTHER",
+    "OTHER STATE LAWS": "OTHER",
+    "OTHER STATE LAWS (NON PENAL LAW)": "OTHER",
+  };
+
+  const returnValue =
+    categoryMap[crimeType] !== undefined ? categoryMap[crimeType] : "OTHER";
+
+  return returnValue;
+};
+
+export const validateSource = (source) => {
+  source = validateString(source, "source").toLowerCase();
+
+  const validSources = ["all", "official", "user"];
+
+  if (!validSources.includes(source))
+    throw `Source must be one of: ${validSources.join(", ")}`;
+
+  return source;
+};
+

@@ -42,6 +42,12 @@
 
 <div class="page-actions">
   {{#if isOwner}}
+    <a
+      class="button-link"
+      href="/saved-locations/create?userReportId={{report._id}}"
+    >
+      Save Location
+    </a>
     <a class="button-link" href="/user-reports/{{report._id}}/edit">Edit Report</a>
 
     <button
@@ -52,14 +58,11 @@
     >Delete Report</button>
   {{/if}}
 
-  {{#if returnSavedLocationId}}
-    <a href="/saved-locations/{{returnSavedLocationId}}">Back to Saved Location Map</a>
-  {{/if}}
-
-  <a href="/user-reports/my-reports">Back to My Reports</a>
+  <button type="button" id="back-button">
+    Back
+  </button>
 </div>
 
 {{#if isOwner}}
   <div id="delete-message" class="form-message" role="alert" hidden></div>
 {{/if}}
-

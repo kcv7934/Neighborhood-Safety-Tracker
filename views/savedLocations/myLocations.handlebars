@@ -40,18 +40,19 @@
 
         {{#if tags.length}}
           <p><strong>Tags:</strong></p>
-          <ul>
+
+          <div class="tag-list">
             {{#each tags}}
-              <li>{{this}}</li>
+              <span class="tag">{{this}}</span>
             {{/each}}
-          </ul>
+          </div>
         {{else}}
           <p>No tags</p>
         {{/if}}
 
-        <p>
-          <a href="/saved-locations/{{_id}}">View Location</a>
-        </p>
+        <div class="page-actions">
+          <a href="/saved-locations/{{_id}}" class="button-link">View Location</a>
+        </div>
       </article>
     {{/each}}
   </div>

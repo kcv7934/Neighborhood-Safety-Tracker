@@ -275,3 +275,86 @@ export const getNearbyUserReports = async (
 
   return nearbyReports;
 };
+
+export const searchUserReports = async ({
+  borough,
+  category,
+  startDate,
+  endDate,
+  sortBy = "date",
+  sortOrder = "desc",
+} = {}) => {
+  const query = { status: "visible" };
+
+  if (borough !== undefined && borough !== "") {
+    borough = validation.validateBorough(borough);
+    query.borough = borough;
+  }
+
+  if (category !== undefined && category !== "") {
+    category = validation.validateSearchCategory(category);
+    query.category = category;
+  }
+
+  let validatedStartDate;
+  let validatedEndDate;
+
+  if (startDate !== undefined && startDate !== "") {
+    validatedStartDate = validation.validateDate(startDate, "startDate");
+  }
+
+  if (endDate !== undefined && endDate !== "") {
+    validateEndDate = validation.validateDate(endDate, "endDate");
+    validateEndDate.setUTCHours(23, 59, 59, 999);
+  }
+
+  if (
+    validatedStartDate &&
+    validatedEndDate &&
+    validatedStartDate > validatedEndDate
+  ) {
+    throw "Start date cannot be after end date";
+  }
+
+  if (validatedStartDate || validatedEndDate) {
+    query.createdAt = {};
+
+    if (validatedStartDate) {
+      query.createdAt.$gte = validatedStartDate;
+    }
+
+    if (validatedEndDate) {
+      query.createdAt.$lte = validatedEndDate;
+    }
+  }
+
+  const validSortFields = ["date", "borough", "category"];
+
+  sortBy = validation.validateString(sortBy, "sortBy");
+
+  if (!validSortFields.includes(sortBy)) {
+    throw `sortBy must be one of ${validSortFields.join(", ")}`;
+  }
+
+  const sortField = sortBy === "date" ? "createdAt" : sortBy;
+
+  sortOrder = validation.validateSortOrder(sortOrder);
+
+  const sortDirection = sortOrder === "asc" ? 1 : -1;
+
+  const userReportsCollection = await userReports();
+
+  let reports = await userReportsCollection
+    .find(query)
+    .sort({ [sortField]: sortDirection })
+    .limit(100)
+    .toArray();
+
+  reports = reports.map((report) => ({
+    ...report,
+    _id: report._id.toString(),
+    authorId: report.authorId.toString(),
+  }));
+
+  return reports;
+};

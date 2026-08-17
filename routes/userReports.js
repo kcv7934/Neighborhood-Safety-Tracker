@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as userReportData from "../data/userReports.js";
 import * as validation from "../data/validation.js";
 import { handleApiError, handlePageError } from "./errorHandlers.js";
+import xss from "xss";
 
 const router = Router();
 
@@ -24,14 +25,18 @@ router
       }
 
       const authorId = req.session.user.id;
-      const { category, address, borough, description } = req.body;
+
+      const cleanCategory = xss(req.body.category);
+      const cleanAddress = xss(req.body.address);
+      const cleanBorough = xss(req.body.borough);
+      const cleanDescription = xss(req.body.description);
 
       const newUserReport = await userReportData.createUserReport(
         authorId,
-        category,
-        address,
-        borough,
-        description,
+        cleanCategory,
+        cleanAddress,
+        cleanBorough,
+        cleanDescription,
       );
 
       return res.status(201).json(newUserReport);
@@ -101,7 +106,7 @@ router.get("/:userReportId/edit", async (req, res) => {
 
     const preparedUserReport = {
       ...userReport,
-      streetAddress
+      streetAddress,
     };
 
     return res.render("userReports/edit", {
@@ -139,21 +144,11 @@ router
         successMessage = "Report updated successfully";
       }
 
-      let returnSavedLocationId = null;
-
-      if (req.query.savedLocationId !== undefined) {
-        returnSavedLocationId = validation.validateId(
-          req.query.savedLocationId,
-          "savedLocationId",
-        );
-      }
-
       return res.render("userReports/reportDetails", {
         title: "User Report Detail",
         report: preparedUserReport,
         isOwner: userReport.authorId === req.session.user.id,
         successMessage,
-        returnSavedLocationId,
         partial: "user_report_script",
         stylesheet: "userReports.css",
       });
@@ -169,7 +164,25 @@ router
           .json({ error: "There are no fields in the request body" });
       }
       const id = req.params.userReportId;
-      const updates = req.body;
+
+      const updates = {};
+
+      if (req.body.category !== undefined) {
+        updates.category = xss(req.body.category);
+      }
+
+      if (req.body.address !== undefined) {
+        updates.address = xss(req.body.address);
+      }
+
+      if (req.body.borough !== undefined) {
+        updates.borough = xss(req.body.borough);
+      }
+
+      if (req.body.description !== undefined) {
+        updates.description = xss(req.body.description);
+      }
+      
       const updatedUserReport = await userReportData.updateUserReport(
         id,
         req.session.user.id,

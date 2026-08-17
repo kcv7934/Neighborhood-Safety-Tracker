@@ -7,6 +7,7 @@ body {
   background-color: #f9fafb;
   font-family: Arial, Helvetica, sans-serif;
   color: #1a1a1a;
+  overflow-wrap: break-word;
 }
 
 a {
@@ -86,10 +87,18 @@ a:focus {
 
 .overview-card,
 .saved-location-card {
+  display: flex;
+  flex-direction: column;
   padding: 15px;
   background-color: white;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-radius: 5px;
+}
+
+.overview-card > a,
+.saved-location-card > a {
+  margin-top: auto;
+  align-self: flex-start;
 }
 
 .section-heading {
@@ -132,4 +141,129 @@ button {
 .button-link:focus {
   background-color: #3730a3;
   color: #ffffff;
+}
+
+#back-button {
+  padding: 10px 10px;
+  background-color: #ffffff;
+  color: black;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#back-button:hover {
+  background-color: #f3f4f6;
+}
+
+.page-form {
+  max-width: 600px;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.form-field {
+  margin-bottom: 16px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+}
+
+.form-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-actions,
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.form-actions button,
+.filter-button {
+  color: #ffffff;
+  background-color: #0284c7;
+  border: 1px solid #0284c7;
+  border-radius: 5px;
+}
+
+.form-actions button:hover,
+.form-actions button:focus,
+.filter-button:hover,
+.filter-button:focus {
+  background-color: #0369a1;
+}
+
+.form-actions .clear-button {
+  color: #374151;
+  background-color: #ffffff;
+  border: 1px solid #9ca3af;
+  border-radius: 5px;
+}
+
+.form-actions .clear-button:hover,
+.form-actions .clear-button:focus {
+  color: #1f2937;
+  background-color: #f3f4f6;
+}
+
+.delete-button {
+  color: #ffffff;
+  background-color: #ef4444;
+  border: 1px solid #dc2626;
+  border-radius: 5px;
+}
+
+.delete-button:hover,
+.delete-button:focus {
+  background-color: #dc2626;
+}
+
+.form-message {
+  margin-top: 16px;
+  color: #b91c1c;
+}
+
+.status-message {
+  padding: 10px;
+  color: #1b5e20;
+  background-color: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 5px;
+}
+
+.overview-count {
+  margin: 10px 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+.tag {
+  padding: 4px 8px;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  font-size: 15px;
 }

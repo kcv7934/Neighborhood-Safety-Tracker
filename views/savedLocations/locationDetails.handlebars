@@ -27,9 +27,19 @@
 </article>
 
 <section class="nearby-filter-section">
-  <h2>Filter Nearby User Reports</h2>
+  <h2>Filter Nearby Complaints</h2>
 
   <form id="nearby-report-filter-form" class="nearby-filter-form">
+
+    <div class="filter-field">
+      <label for="source">Report Source</label>
+      <select id="source" name="source">
+        <option value="all">All Reports</option>
+        <option value="official">Official Reports</option>
+        <option value="user">User Generated Reports</option>
+      </select>
+    </div>
+    
     <div class="filter-field">
       <label for="report-category-fitler">Category</label>
       <select id="report-category-filter" name="category">
@@ -53,7 +63,8 @@
 
     <div class="filter-actions">
       <button type="submit" class="filter-button">Apply Filters</button>
-      <button type="button" id="clear-report-filters" class="clear-button">Clear Filters</button>
+      <button type="button" id="clear-report-filters" class="clear-button">Clear
+        Filters</button>
     </div>
   </form>
 </section>
@@ -73,7 +84,8 @@
 </section>
 
 <div class="page-actions">
-  <a href="/saved-locations/{{location._id}}/edit" class="button-link">Edit Saved Location</a>
+  <a href="/saved-locations/{{location._id}}/edit" class="button-link">Edit
+    Saved Location</a>
   <button
     type="button"
     id="delete-saved-location-button"

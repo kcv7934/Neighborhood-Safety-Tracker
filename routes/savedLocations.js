@@ -1,8 +1,11 @@
 import { Router } from "express";
 import * as savedLocationData from "../data/savedLocations.js";
+import * as officialReportData from "../data/officialReports.js";
 import { handleApiError, handlePageError } from "./errorHandlers.js";
 import * as validation from "../data/validation.js";
 import * as userReportData from "../data/userReports.js";
+import { reverseGeocodeCoordinates } from "../data/geocoding.js";
+import xss from "xss";
 
 const router = Router();
 
@@ -10,7 +13,11 @@ router
   .route("/")
   .get(async (req, res) => {
     try {
-      const tag = req.query.tag;
+      let tag;
+
+      if (req.query.tag !== undefined) {
+        tag = xss(req.query.tag);
+      }
 
       const savedLocationList = await savedLocationData.getSavedLocationsByUser(
         req.session.user.id,
@@ -30,14 +37,24 @@ router
           .json({ error: "There are no fields in the request body" });
       }
 
-      const { label, address, borough, tags = [] } = req.body;
+      const cleanLabel = xss(req.body.label);
+      const cleanAddress = xss(req.body.address);
+      const cleanBorough = xss(req.body.borough);
+
+      let cleanTags = [];
+
+      if (req.body.tags !== undefined) {
+        cleanTags = req.body.tags.map((tag) => {
+          return xss(tag);
+        });
+      }
 
       const newSavedLocation = await savedLocationData.createSavedLocation(
         req.session.user.id,
-        label,
-        address,
-        borough,
-        tags,
+        cleanLabel,
+        cleanAddress,
+        cleanBorough,
+        cleanTags,
       );
 
       return res.status(201).json(newSavedLocation);
@@ -46,18 +63,65 @@ router
     }
   });
 
-router.get("/create", (req, res) => {
-  return res.render("savedLocations/create", {
-    title: "Save a Location",
-    boroughs: validation.validBoroughs,
-    partial: "saved_location_script",
-    stylesheet: "savedLocations.css",
-  });
+router.get("/create", async (req, res) => {
+  try {
+    let address = "";
+    let selectedBorough = "";
+
+    if (
+      req.query.userReportId !== undefined &&
+      req.query.officialReportId !== undefined
+    ) {
+      throw "Only one report can be used to save a location, two were provided";
+    }
+
+    if (req.query.userReportId !== undefined) {
+      const userReport = await userReportData.getUserReportById(
+        req.query.userReportId,
+      );
+
+      address = userReport.address;
+      selectedBorough = userReport.borough;
+    } else if (req.query.officialReportId !== undefined) {
+      const officialReport = await officialReportData.getOfficialReportById(
+        req.query.officialReportId,
+      );
+
+      const location = await reverseGeocodeCoordinates(
+        officialReport.latitude,
+        officialReport.longitude,
+      );
+
+      address = location.address;
+      selectedBorough = officialReport.borough;
+    }
+
+    const boroughs = validation.validBoroughs.map((borough) => {
+      return {
+        value: borough,
+        selected: borough === selectedBorough,
+      };
+    });
+
+    return res.render("savedLocations/create", {
+      title: "Save a Location",
+      address,
+      boroughs,
+      partial: "saved_location_script",
+      stylesheet: "savedLocations.css",
+    });
+  } catch (e) {
+    return handlePageError(e, res, "Saved Location");
+  }
 });
 
 router.get("/my-locations", async (req, res) => {
   try {
-    const tag = req.query.tag;
+    let tag;
+
+    if (req.query.tag !== undefined) {
+      tag = xss(req.query.tag);
+    }
 
     const mySavedLocations = await savedLocationData.getSavedLocationsByUser(
       req.session.user.id,
@@ -124,16 +188,41 @@ router.get("/:savedLocationId/edit", async (req, res) => {
 
 router.get("/:savedLocationId/nearby-user-reports", async (req, res) => {
   try {
-    const id = req.params.savedLocationId;
+    const savedLocationId = req.params.savedLocationId;
 
     const { category, startDate, endDate } = req.query;
 
     const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
-      id,
+      savedLocationId,
       req.session.user.id,
     );
 
     const nearbyReports = await userReportData.getNearbyUserReports(
+      savedLocation.latitude,
+      savedLocation.longitude,
+      category,
+      startDate,
+      endDate,
+    );
+
+    return res.status(200).json(nearbyReports);
+  } catch (e) {
+    return handleApiError(e, res);
+  }
+});
+
+router.get("/:savedLocationId/nearby-official-reports", async (req, res) => {
+  try {
+    const savedLocationId = req.params.savedLocationId;
+
+    const { category, startDate, endDate } = req.query;
+
+    const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
+      savedLocationId,
+      TEMP_AUTHOR_ID,
+    );
+
+    const nearbyReports = await officialReportData.getNearbyOfficialReports(
       savedLocation.latitude,
       savedLocation.longitude,
       category,
@@ -189,10 +278,30 @@ router
 
       const id = req.params.savedLocationId;
 
+      const updates = {};
+
+      if (req.body.label !== undefined) {
+        updates.label = xss(req.body.label);
+      }
+
+      if (req.body.address !== undefined) {
+        updates.address = xss(req.body.address);
+      }
+
+      if (req.body.borough !== undefined) {
+        updates.borough = xss(req.body.borough);
+      }
+
+      if (req.body.tags !== undefined) {
+        updates.tags = req.body.tags.map((tag) => {
+          return xss(tag);
+        });
+      }
+
       const updatedSavedLocation = await savedLocationData.updateSavedLocation(
         id,
         req.session.user.id,
-        req.body,
+        updates,
       );
 
       return res.status(200).json(updatedSavedLocation);
