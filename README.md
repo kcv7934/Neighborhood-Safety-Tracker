@@ -47,9 +47,20 @@ APP_TOKEN=your_token_here
 ```bash
 npm run seed
 ```
+**Note:** The initial seed may take around 5 minutes to complete because the application pulls data from the Official NYC Open Dataset. Wait until "Database seeded successfully" message appears before moving to the next step.
 
 2) Start the app
 
 ```bash
 npm start
 ```
+## Test Users 
+
+The seed file creates some users for testing different features. All test users use the same password for ease of access.
+
+Username: kevin | Email : kevin@test.com
+Username: alex22 | Email: alex22@test.com
+Username: maria | Email: maria@test.com
+Username: james | Email: james@test.com
+Username: sarah | Email: sarah@test.com
+Username: daniel | Email: daniel@test.com
