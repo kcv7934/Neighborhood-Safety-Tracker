@@ -59,8 +59,13 @@ npm start
 The seed file creates some users for testing different features. All test users use the same password for ease of access.
 
 Username: kevin | Email : kevin@test.com
+
 Username: alex22 | Email: alex22@test.com
+
 Username: maria | Email: maria@test.com
+
 Username: james | Email: james@test.com
+
 Username: sarah | Email: sarah@test.com
+
 Username: daniel | Email: daniel@test.com
