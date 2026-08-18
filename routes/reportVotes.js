@@ -4,8 +4,6 @@ import { handleApiError } from "./errorHandlers.js";
 
 const router = Router();
 
-const TEMP_USER_ID = "687000000000000000000001";
-
 router.post("/:reportId", async (req, res) => {
   try {
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -16,10 +14,11 @@ router.post("/:reportId", async (req, res) => {
 
     const reportId = req.params.reportId;
     const type = req.body.type;
+    const userId = req.session.user.id;
 
     const vote = await reportVoteData.voteOnUserReport(
       reportId,
-      TEMP_USER_ID,
+      userId,
       type,
     );
 

@@ -219,7 +219,7 @@ router.get("/:savedLocationId/nearby-official-reports", async (req, res) => {
 
     const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
       savedLocationId,
-      TEMP_AUTHOR_ID,
+      req.session.user.id,
     );
 
     const nearbyReports = await officialReportData.getNearbyOfficialReports(

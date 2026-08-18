@@ -10,6 +10,11 @@
   <h2>{{report.category}}</h2>
 
   <p>
+    <strong>Reported By:</strong>
+    {{report.authorUsername}}
+  </p>
+
+  <p>
     <strong>Address:</strong>
     {{report.address}}
   </p>
@@ -40,9 +45,7 @@
   </p>
 </article>
 
-{{#if isOwner}}
-
-{{else}}
+{{#if isOwner}}{{else}}
   <div class="report-votes">
     <input type="hidden" id="current-report-vote" value="{{currentVoteType}}" />
 
@@ -153,6 +156,10 @@
     {{#if comments.length}}
       {{#each comments}}
         <article class="comment-card" data-comment-id="{{_id}}">
+          <p>
+            <strong>{{authorUsername}}</strong>
+          </p>
+
           <p id="comment-text-{{_id}}" class="comment-text">{{text}}</p>
 
           <p>

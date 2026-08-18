@@ -5,8 +5,6 @@ import xss from "xss";
 
 const router = Router();
 
-const TEMP_AUTHOR_ID = "687000000000000000000001";
-
 router.route("/").post(async (req, res) => {
   try {
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -17,10 +15,11 @@ router.route("/").post(async (req, res) => {
 
     const reportId = req.body.reportId;
     const cleanText = xss(req.body.text);
+    const userId = req.session.user.id;
 
     const newComment = await commentData.createComment(
       reportId,
-      TEMP_AUTHOR_ID,
+      userId,
       cleanText,
     );
 
@@ -42,10 +41,11 @@ router
 
       const commentId = req.params.commentId;
       const cleanText = xss(req.body.text);
+      const userId = req.session.user.id;
 
       const updatedComment = await commentData.updateComment(
         commentId,
-        TEMP_AUTHOR_ID,
+        userId,
         cleanText,
       );
 
@@ -57,10 +57,11 @@ router
   .delete(async (req, res) => {
     try {
       const commentId = req.params.commentId;
+      const userId = req.session.user.id;
 
       const deletedInfo = await commentData.removeComment(
         commentId,
-        TEMP_AUTHOR_ID,
+        userId,
       );
 
       return res.status(200).json(deletedInfo);

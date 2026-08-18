@@ -7,10 +7,12 @@ import {
   reportFlags,
   reportVotes,
   commentVotes,
+  users,
 } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
 import { queryOfficialReportsFromDB } from "../data/officialReports.js";
 import * as validation from "../data/validation.js";
+import bcrypt from "bcrypt";
 
 const CURRENT_TEST_USER_ID = new ObjectId("687000000000000000000001");
 const OTHER_USER_ID = new ObjectId("687000000000000000000002");
@@ -28,6 +30,83 @@ const CURRENT_USER_COMMENT_ID = new ObjectId("687000000000000000000201");
 const THIRD_USER_COMMENT_ID = new ObjectId("687000000000000000000202");
 
 const FOURTH_USER_COMMENT_ID = new ObjectId("687000000000000000000203");
+
+const seedUsers = async () => {
+  const usersCollection = await users();
+
+  const password = await bcrypt.hash("Password1!", 10);
+
+  const userData = [
+    {
+      _id: CURRENT_TEST_USER_ID,
+      firstName: "Kevin",
+      lastName: "Test",
+      username: "kevin",
+      email: "kevin@test.com",
+      state: "NJ",
+      city: "Hoboken",
+      age: 23,
+      password,
+    },
+    {
+      _id: OTHER_USER_ID,
+      firstName: "Alex",
+      lastName: "Morgan",
+      username: "alex22",
+      email: "alex22@test.com",
+      state: "NY",
+      city: "New York",
+      age: 25,
+      password,
+    },
+    {
+      _id: THIRD_USER_ID,
+      firstName: "Maria",
+      lastName: "Lopez",
+      username: "maria",
+      email: "maria@test.com",
+      state: "NY",
+      city: "Brooklyn",
+      age: 27,
+      password,
+    },
+    {
+      _id: FOURTH_USER_ID,
+      firstName: "James",
+      lastName: "Smith",
+      username: "james",
+      email: "james@test.com",
+      state: "NY",
+      city: "Queens",
+      age: 30,
+      password,
+    },
+    {
+      _id: FIFTH_USER_ID,
+      firstName: "Sarah",
+      lastName: "Jones",
+      username: "sarah",
+      email: "sarah@test.com",
+      state: "NY",
+      city: "Bronx",
+      age: 28,
+      password,
+    },
+    {
+      _id: SIXTH_USER_ID,
+      firstName: "Daniel",
+      lastName: "Brown",
+      username: "daniel",
+      email: "daniel@test.com",
+      state: "NY",
+      city: "Staten Island",
+      age: 26,
+      password,
+    },
+  ];
+
+  await usersCollection.insertMany(userData);
+};
 
 const seedUserReports = async () => {
   const userReportsCollection = await userReports();
@@ -634,6 +713,7 @@ const main = async () => {
   const db = await dbConnection();
   await db.dropDatabase();
 
+  await seedUsers();
   await seedUserReports();
   await seedSavedLocations();
   await seedOfficialReports();

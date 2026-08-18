@@ -7,6 +7,8 @@ import * as commentData from "../data/comments.js";
 import * as reportVoteData from "../data/reportVotes.js";
 import * as commentVoteData from "../data/commentVotes.js";
 import * as reportFlagData from "../data/reportFlags.js";
+import * as userData from "../data/users.js";
+import { report } from "process";
 
 const router = Router();
 
@@ -131,11 +133,15 @@ router
   .get(async (req, res) => {
     try {
       const id = req.params.userReportId;
+      const userId = req.session.user.id;
 
       const userReport = await userReportData.getUserReportById(id);
 
+      const reportAuthor = await userData.getUserById(userReport.authorId);
+
       const preparedUserReport = {
         ...userReport,
+        authorUsername: reportAuthor.username,
         createdAt: userReport.createdAt.toLocaleString(),
         updatedAt: userReport.updatedAt.toLocaleString(),
       };
@@ -145,13 +151,15 @@ router
       const preparedComments = [];
 
       for (const comment of comments) {
+        const commentAuthor = await userData.getUserById(comment.authorId);
+
         const commentVoteCounts = await commentVoteData.getCommentVoteCounts(
           comment._id,
         );
 
         const userCommentVote = await commentVoteData.getUserCommentVote(
           comment._id,
-          TEMP_AUTHOR_ID,
+          userId,
         );
 
         let currentCommentVoteType = null;
@@ -162,16 +170,14 @@ router
           ...comment,
           createdAt: comment.createdAt.toLocaleString(),
           updatedAt: comment.updatedAt.toLocaleString(),
-          isOwner: comment.authorId === TEMP_AUTHOR_ID,
+          isOwner: comment.authorId === userId,
           voteCounts: commentVoteCounts,
           currentVoteType: currentCommentVoteType,
+          authorUsername: commentAuthor.username,
         });
       }
 
-      const userReportVote = await reportVoteData.getUserReportVote(
-        id,
-        TEMP_AUTHOR_ID,
-      );
+      const userReportVote = await reportVoteData.getUserReportVote(id, userId);
 
       const reportVoteCounts = await reportVoteData.getReportVoteCounts(id);
 
@@ -179,10 +185,7 @@ router
 
       if (userReportVote) currentReportVoteType = userReportVote.type;
 
-      const userReportFlag = await reportFlagData.getUserReportFlag(
-        id,
-        TEMP_AUTHOR_ID,
-      );
+      const userReportFlag = await reportFlagData.getUserReportFlag(id, userId);
 
       const hasFlagged = userReportFlag ? true : false;
 
@@ -197,7 +200,7 @@ router
       return res.render("userReports/reportDetails", {
         title: "User Report Detail",
         report: preparedUserReport,
-        isOwner: userReport.authorId === req.session.user.id,
+        isOwner: userReport.authorId === userId,
         successMessage,
         comments: preparedComments,
         voteCounts: reportVoteCounts,
