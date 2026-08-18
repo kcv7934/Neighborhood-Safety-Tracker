@@ -10,8 +10,6 @@ import * as reportFlagData from "../data/reportFlags.js";
 
 const router = Router();
 
-const TEMP_AUTHOR_ID = "687000000000000000000001";
-
 router
   .route("/")
   .get(async (req, res) => {
@@ -30,8 +28,7 @@ router
           .json({ error: "There are no fields in the request body" });
       }
 
-      // TODO: replace with req.session.user._id when authentication is implemented
-      const authorId = TEMP_AUTHOR_ID;
+      const authorId = req.session.user.id;
 
       const cleanCategory = xss(req.body.category);
       const cleanAddress = xss(req.body.address);
@@ -64,8 +61,7 @@ router.get("/create", (req, res) => {
 
 router.get("/my-reports", async (req, res) => {
   try {
-    // TODO: temporary authorId to be used until users collection is implemented
-    const authorId = TEMP_AUTHOR_ID;
+    const authorId = req.session.user.id;
 
     const reports = await userReportData.getUserReportsByAuthor(authorId);
 
@@ -89,7 +85,7 @@ router.get("/:userReportId/edit", async (req, res) => {
 
     const userReport = await userReportData.getUserReportByIdForAuthor(
       id,
-      TEMP_AUTHOR_ID,
+      req.session.user.id,
     );
 
     const currentCategory = userReport.category;
@@ -201,7 +197,7 @@ router
       return res.render("userReports/reportDetails", {
         title: "User Report Detail",
         report: preparedUserReport,
-        isOwner: userReport.authorId === TEMP_AUTHOR_ID,
+        isOwner: userReport.authorId === req.session.user.id,
         successMessage,
         comments: preparedComments,
         voteCounts: reportVoteCounts,
@@ -244,7 +240,7 @@ router
 
       const updatedUserReport = await userReportData.updateUserReport(
         id,
-        TEMP_AUTHOR_ID,
+        req.session.user.id,
         updates,
       );
       return res.status(200).json(updatedUserReport);
@@ -257,7 +253,7 @@ router
       const id = req.params.userReportId;
       const deletedInfo = await userReportData.removeUserReport(
         id,
-        TEMP_AUTHOR_ID,
+        req.session.user.id,
       );
       return res.status(200).json(deletedInfo);
     } catch (e) {

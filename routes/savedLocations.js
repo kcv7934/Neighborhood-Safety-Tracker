@@ -9,8 +9,6 @@ import xss from "xss";
 
 const router = Router();
 
-const TEMP_AUTHOR_ID = "687000000000000000000001";
-
 router
   .route("/")
   .get(async (req, res) => {
@@ -22,7 +20,7 @@ router
       }
 
       const savedLocationList = await savedLocationData.getSavedLocationsByUser(
-        TEMP_AUTHOR_ID,
+        req.session.user.id,
         tag,
       );
 
@@ -52,7 +50,7 @@ router
       }
 
       const newSavedLocation = await savedLocationData.createSavedLocation(
-        TEMP_AUTHOR_ID,
+        req.session.user.id,
         cleanLabel,
         cleanAddress,
         cleanBorough,
@@ -126,7 +124,7 @@ router.get("/my-locations", async (req, res) => {
     }
 
     const mySavedLocations = await savedLocationData.getSavedLocationsByUser(
-      TEMP_AUTHOR_ID,
+      req.session.user.id,
       tag,
     );
 
@@ -154,7 +152,7 @@ router.get("/:savedLocationId/edit", async (req, res) => {
 
     const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
       id,
-      TEMP_AUTHOR_ID,
+      req.session.user.id,
     );
 
     const currentBorough = validation.validBoroughs.find((borough) => {
@@ -196,7 +194,7 @@ router.get("/:savedLocationId/nearby-user-reports", async (req, res) => {
 
     const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
       savedLocationId,
-      TEMP_AUTHOR_ID,
+      req.session.user.id,
     );
 
     const nearbyReports = await userReportData.getNearbyUserReports(
@@ -246,7 +244,7 @@ router
 
       const savedLocation = await savedLocationData.getSavedLocationByIdForUser(
         id,
-        TEMP_AUTHOR_ID,
+        req.session.user.id,
       );
 
       let successMessage = null;
@@ -302,7 +300,7 @@ router
 
       const updatedSavedLocation = await savedLocationData.updateSavedLocation(
         id,
-        TEMP_AUTHOR_ID,
+        req.session.user.id,
         updates,
       );
 
@@ -317,7 +315,7 @@ router
 
       const deletedInfo = await savedLocationData.removeSavedLocation(
         id,
-        TEMP_AUTHOR_ID,
+        req.session.user.id,
       );
 
       return res.status(200).json(deletedInfo);
