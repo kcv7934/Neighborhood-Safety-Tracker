@@ -19,7 +19,7 @@ const updateVoteButtons = (type) => {
 
   if (type === "upvote") {
     upvoteButton.disabled = true;
-  } else {
+  } else if (type === "downvote") {
     downvoteButton.disabled = true;
   }
 };

@@ -137,11 +137,18 @@ router
 
       const userReport = await userReportData.getUserReportById(id);
 
-      const reportAuthor = await userData.getUserById(userReport.authorId);
+      let reportAuthorUsername = "Deleted User";
+
+      try {
+        const reportAuthor = await userData.getUserById(userReport.authorId);
+        reportAuthorUsername = reportAuthor.username;
+      } catch (e) {
+        reportAuthorUsername = "Deleted User";
+      }
 
       const preparedUserReport = {
         ...userReport,
-        authorUsername: reportAuthor.username,
+        authorUsername: reportAuthorUsername,
         createdAt: userReport.createdAt.toLocaleString(),
         updatedAt: userReport.updatedAt.toLocaleString(),
       };
@@ -151,7 +158,14 @@ router
       const preparedComments = [];
 
       for (const comment of comments) {
-        const commentAuthor = await userData.getUserById(comment.authorId);
+        let commentAuthorUsername = "Deleted User";
+
+        try {
+          const commentAuthor = await userData.getUserById(comment.authorId);
+          commentAuthorUsername = commentAuthor.username;
+        } catch (e) {
+          commentAuthorUsername = "Deleted User";
+        }
 
         const commentVoteCounts = await commentVoteData.getCommentVoteCounts(
           comment._id,
@@ -173,7 +187,7 @@ router
           isOwner: comment.authorId === userId,
           voteCounts: commentVoteCounts,
           currentVoteType: currentCommentVoteType,
-          authorUsername: commentAuthor.username,
+          authorUsername: commentAuthorUsername,
         });
       }
 

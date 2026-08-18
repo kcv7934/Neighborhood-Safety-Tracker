@@ -93,13 +93,14 @@
 {{/if}}
 
 <div class="page-actions">
+  <a
+    class="button-link"
+    href="/saved-locations/create?userReportId={{report._id}}"
+  >
+    Save Location
+  </a>
+
   {{#if isOwner}}
-    <a
-      class="button-link"
-      href="/saved-locations/create?userReportId={{report._id}}"
-    >
-      Save Location
-    </a>
     <a class="button-link" href="/user-reports/{{report._id}}/edit">Edit Report</a>
 
     <button

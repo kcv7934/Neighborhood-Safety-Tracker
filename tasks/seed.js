@@ -14,18 +14,18 @@ import { queryOfficialReportsFromDB } from "../data/officialReports.js";
 import * as validation from "../data/validation.js";
 import bcrypt from "bcrypt";
 
-const CURRENT_TEST_USER_ID = new ObjectId("687000000000000000000001");
-const OTHER_USER_ID = new ObjectId("687000000000000000000002");
-const THIRD_USER_ID = new ObjectId("687000000000000000000003");
-const FOURTH_USER_ID = new ObjectId("687000000000000000000004");
-const FIFTH_USER_ID = new ObjectId("687000000000000000000005");
-const SIXTH_USER_ID = new ObjectId("687000000000000000000006");
+const KEVIN_USER_ID = new ObjectId("687000000000000000000001");
+const ALEX_USER_ID = new ObjectId("687000000000000000000002");
+const MARIA_USER_ID = new ObjectId("687000000000000000000003");
+const JAMES_USER_ID = new ObjectId("687000000000000000000004");
+const SARAH_USER_ID = new ObjectId("687000000000000000000005");
+const DANIEL_USER_ID = new ObjectId("687000000000000000000006");
 
 const FLAG_TEST_REPORT_ID = new ObjectId("687000000000000000000101");
 
 const COMMENT_TEST_REPORT_ID = new ObjectId("687000000000000000000102");
 
-const CURRENT_USER_COMMENT_ID = new ObjectId("687000000000000000000201");
+const KEVIN_COMMENT_ID = new ObjectId("687000000000000000000201");
 
 const THIRD_USER_COMMENT_ID = new ObjectId("687000000000000000000202");
 
@@ -38,7 +38,7 @@ const seedUsers = async () => {
 
   const userData = [
     {
-      _id: CURRENT_TEST_USER_ID,
+      _id: KEVIN_USER_ID,
       firstName: "Kevin",
       lastName: "Test",
       username: "kevin",
@@ -49,7 +49,7 @@ const seedUsers = async () => {
       password,
     },
     {
-      _id: OTHER_USER_ID,
+      _id: ALEX_USER_ID,
       firstName: "Alex",
       lastName: "Morgan",
       username: "alex22",
@@ -60,7 +60,7 @@ const seedUsers = async () => {
       password,
     },
     {
-      _id: THIRD_USER_ID,
+      _id: MARIA_USER_ID,
       firstName: "Maria",
       lastName: "Lopez",
       username: "maria",
@@ -71,7 +71,7 @@ const seedUsers = async () => {
       password,
     },
     {
-      _id: FOURTH_USER_ID,
+      _id: JAMES_USER_ID,
       firstName: "James",
       lastName: "Smith",
       username: "james",
@@ -82,7 +82,7 @@ const seedUsers = async () => {
       password,
     },
     {
-      _id: FIFTH_USER_ID,
+      _id: SARAH_USER_ID,
       firstName: "Sarah",
       lastName: "Jones",
       username: "sarah",
@@ -93,7 +93,7 @@ const seedUsers = async () => {
       password,
     },
     {
-      _id: SIXTH_USER_ID,
+      _id: DANIEL_USER_ID,
       firstName: "Daniel",
       lastName: "Brown",
       username: "daniel",
@@ -111,11 +111,6 @@ const seedUsers = async () => {
 const seedUserReports = async () => {
   const userReportsCollection = await userReports();
 
-  // TODO: temporary authorId until users collection is implemented
-  const testAuthorId = new ObjectId("687000000000000000000001");
-  const otherAuthorId = new ObjectId("687000000000000000000002");
-  const thirdAuthorId = new ObjectId("687000000000000000000003");
-
   const daysAgo = (days) => {
     const date = new Date();
     date.setUTCDate(date.getUTCDate() - days);
@@ -124,7 +119,7 @@ const seedUserReports = async () => {
 
   const userReportData = [
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "THEFT",
       address: "476 Fifth Avenue",
       borough: "MANHATTAN",
@@ -136,7 +131,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(1),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "PUBLIC ORDER OFFENSE",
       address: "45 Atlantic Avenue",
       borough: "BROOKLYN",
@@ -148,7 +143,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(2),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "ASSAULT",
       address: "120 Flatbush Avenue",
       borough: "BROOKLYN",
@@ -160,7 +155,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(3),
     },
     {
-      authorId: otherAuthorId,
+      authorId: ALEX_USER_ID,
       category: "HARASSMENT",
       address: "350 Fifth Avenue",
       borough: "MANHATTAN",
@@ -172,7 +167,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(5),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "VANDALISM",
       address: "150 East 42nd Street",
       borough: "MANHATTAN",
@@ -184,7 +179,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(7),
     },
     {
-      authorId: thirdAuthorId,
+      authorId: MARIA_USER_ID,
       category: "BURGLARY",
       address: "500 Bedford Avenue",
       borough: "BROOKLYN",
@@ -196,7 +191,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(10),
     },
     {
-      authorId: otherAuthorId,
+      authorId: ALEX_USER_ID,
       category: "ROBBERY",
       address: "90 Queens Boulevard",
       borough: "QUEENS",
@@ -208,7 +203,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(12),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "THEFT",
       address: "37-01 Main Street",
       borough: "QUEENS",
@@ -220,7 +215,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(15),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "MOTOR VEHICLE THEFT",
       address: "200 Fordham Road",
       borough: "BRONX",
@@ -232,7 +227,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(18),
     },
     {
-      authorId: thirdAuthorId,
+      authorId: MARIA_USER_ID,
       category: "DRUG OFFENSE",
       address: "700 Grand Concourse",
       borough: "BRONX",
@@ -244,7 +239,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(20),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "WEAPONS OFFENSE",
       address: "1000 Southern Boulevard",
       borough: "BRONX",
@@ -256,7 +251,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(23),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "FRAUD",
       address: "60 Wall Street",
       borough: "MANHATTAN",
@@ -268,7 +263,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(27),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "TRESPASSING",
       address: "400 Atlantic Avenue",
       borough: "BROOKLYN",
@@ -280,7 +275,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(30),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "TRAFFIC OFFENSE",
       address: "200 Queens Plaza",
       borough: "QUEENS",
@@ -292,7 +287,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(35),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "IMPAIRED DRIVING",
       address: "80 Richmond Terrace",
       borough: "STATEN ISLAND",
@@ -304,7 +299,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(40),
     },
     {
-      authorId: otherAuthorId,
+      authorId: ALEX_USER_ID,
       category: "ARSON",
       address: "120 Bay Street",
       borough: "STATEN ISLAND",
@@ -316,7 +311,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(45),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "KIDNAPPING",
       address: "300 East Tremont Avenue",
       borough: "BRONX",
@@ -328,7 +323,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(50),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "SEXUAL OFFENSE",
       address: "100 Broadway",
       borough: "MANHATTAN",
@@ -340,7 +335,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(55),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "ASSAULT",
       address: "600 Atlantic Avenue",
       borough: "BROOKLYN",
@@ -352,7 +347,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(60),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "ASSAULT",
       address: "160 Queens Boulevard",
       borough: "QUEENS",
@@ -364,7 +359,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(65),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "THEFT",
       address: "250 Bedford Avenue",
       borough: "BROOKLYN",
@@ -376,7 +371,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(70),
     },
     {
-      authorId: thirdAuthorId,
+      authorId: MARIA_USER_ID,
       category: "ROBBERY",
       address: "110 East 125th Street",
       borough: "MANHATTAN",
@@ -388,7 +383,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(80),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "HARASSMENT",
       address: "100 Jamaica Avenue",
       borough: "QUEENS",
@@ -400,7 +395,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(90),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "VANDALISM",
       address: "300 Richmond Avenue",
       borough: "STATEN ISLAND",
@@ -412,7 +407,7 @@ const seedUserReports = async () => {
       updatedAt: daysAgo(100),
     },
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "FRAUD",
       address: "900 Grand Concourse",
       borough: "BRONX",
@@ -426,7 +421,7 @@ const seedUserReports = async () => {
 
     // Hidden report for testing
     {
-      authorId: testAuthorId,
+      authorId: KEVIN_USER_ID,
       category: "ASSAULT",
       address: "500 Flatbush Avenue",
       borough: "BROOKLYN",
@@ -440,7 +435,7 @@ const seedUserReports = async () => {
 
     {
       _id: FLAG_TEST_REPORT_ID,
-      authorId: OTHER_USER_ID,
+      authorId: ALEX_USER_ID,
       category: "ROBBERY",
       address: "250 Broadway",
       borough: "MANHATTAN",
@@ -453,7 +448,7 @@ const seedUserReports = async () => {
     },
     {
       _id: COMMENT_TEST_REPORT_ID,
-      authorId: OTHER_USER_ID,
+      authorId: ALEX_USER_ID,
       category: "VANDALISM",
       address: "300 Atlantic Avenue",
       borough: "BROOKLYN",
@@ -476,9 +471,9 @@ const seedComments = async () => {
 
   const commentData = [
     {
-      _id: CURRENT_USER_COMMENT_ID,
+      _id: KEVIN_COMMENT_ID,
       reportId: COMMENT_TEST_REPORT_ID,
-      authorId: CURRENT_TEST_USER_ID,
+      authorId: KEVIN_USER_ID,
       text: "This is a comment created by the current test user.",
       createdAt: currentDate,
       updatedAt: currentDate,
@@ -486,7 +481,7 @@ const seedComments = async () => {
     {
       _id: THIRD_USER_COMMENT_ID,
       reportId: COMMENT_TEST_REPORT_ID,
-      authorId: THIRD_USER_ID,
+      authorId: MARIA_USER_ID,
       text: "I also noticed damage at this location.",
       createdAt: currentDate,
       updatedAt: currentDate,
@@ -494,7 +489,7 @@ const seedComments = async () => {
     {
       _id: FOURTH_USER_COMMENT_ID,
       reportId: COMMENT_TEST_REPORT_ID,
-      authorId: FOURTH_USER_ID,
+      authorId: JAMES_USER_ID,
       text: "Thanks for reporting this incident.",
       createdAt: currentDate,
       updatedAt: currentDate,
@@ -512,21 +507,21 @@ const seedReportVotes = async () => {
   const reportVoteData = [
     {
       reportId: COMMENT_TEST_REPORT_ID,
-      userId: CURRENT_TEST_USER_ID,
+      userId: KEVIN_USER_ID,
       type: "upvote",
       createdAt: currentDate,
       updatedAt: currentDate,
     },
     {
       reportId: COMMENT_TEST_REPORT_ID,
-      userId: THIRD_USER_ID,
+      userId: MARIA_USER_ID,
       type: "upvote",
       createdAt: currentDate,
       updatedAt: currentDate,
     },
     {
       reportId: COMMENT_TEST_REPORT_ID,
-      userId: FOURTH_USER_ID,
+      userId: JAMES_USER_ID,
       type: "downvote",
       createdAt: currentDate,
       updatedAt: currentDate,
@@ -544,28 +539,28 @@ const seedCommentVotes = async () => {
   const commentVoteData = [
     {
       commentId: THIRD_USER_COMMENT_ID,
-      userId: CURRENT_TEST_USER_ID,
+      userId: KEVIN_USER_ID,
       type: "upvote",
       createdAt: currentDate,
       updatedAt: currentDate,
     },
     {
       commentId: THIRD_USER_COMMENT_ID,
-      userId: FIFTH_USER_ID,
+      userId: SARAH_USER_ID,
       type: "upvote",
       createdAt: currentDate,
       updatedAt: currentDate,
     },
     {
       commentId: FOURTH_USER_COMMENT_ID,
-      userId: CURRENT_TEST_USER_ID,
+      userId: KEVIN_USER_ID,
       type: "downvote",
       createdAt: currentDate,
       updatedAt: currentDate,
     },
     {
       commentId: FOURTH_USER_COMMENT_ID,
-      userId: SIXTH_USER_ID,
+      userId: DANIEL_USER_ID,
       type: "downvote",
       createdAt: currentDate,
       updatedAt: currentDate,
@@ -583,31 +578,31 @@ const seedReportFlags = async () => {
   const reportFlagData = [
     {
       reportId: FLAG_TEST_REPORT_ID,
-      userId: THIRD_USER_ID,
+      userId: MARIA_USER_ID,
       reason: "Misinformation",
       createdAt: currentDate,
     },
     {
       reportId: FLAG_TEST_REPORT_ID,
-      userId: FOURTH_USER_ID,
+      userId: JAMES_USER_ID,
       reason: "Misinformation",
       createdAt: currentDate,
     },
     {
       reportId: FLAG_TEST_REPORT_ID,
-      userId: FIFTH_USER_ID,
-      reason: "Inappropriate Content",
+      userId: SARAH_USER_ID,
+      reason: "Inappropriate Report",
       createdAt: currentDate,
     },
     {
       reportId: FLAG_TEST_REPORT_ID,
-      userId: SIXTH_USER_ID,
+      userId: DANIEL_USER_ID,
       reason: "Other",
       createdAt: currentDate,
     },
     {
       reportId: COMMENT_TEST_REPORT_ID,
-      userId: CURRENT_TEST_USER_ID,
+      userId: KEVIN_USER_ID,
       reason: "Misinformation",
       createdAt: currentDate,
     },
@@ -619,14 +614,9 @@ const seedReportFlags = async () => {
 const seedSavedLocations = async () => {
   const savedLocationsCollection = await savedLocations();
 
-  // Same temporary user used for user reports
-  const testUserId = new ObjectId("687000000000000000000001");
-  const otherUserId = new ObjectId("687000000000000000000002");
-  const thirdUserId = new ObjectId("687000000000000000000003");
-
   const savedLocationData = [
     {
-      userId: testUserId,
+      userId: KEVIN_USER_ID,
       label: "Home",
       address: "120 Flatbush Avenue, Brooklyn, NY",
       latitude: 40.6845,
@@ -634,7 +624,7 @@ const seedSavedLocations = async () => {
       tags: ["Home"],
     },
     {
-      userId: testUserId,
+      userId: KEVIN_USER_ID,
       label: "Work",
       address: "350 Fifth Avenue, Manhattan, NY",
       latitude: 40.7484,
@@ -642,7 +632,7 @@ const seedSavedLocations = async () => {
       tags: ["Work"],
     },
     {
-      userId: testUserId,
+      userId: KEVIN_USER_ID,
       label: "School",
       address: "200 Queens Plaza, Queens, NY",
       latitude: 40.7506,
@@ -650,7 +640,7 @@ const seedSavedLocations = async () => {
       tags: ["School"],
     },
     {
-      userId: testUserId,
+      userId: KEVIN_USER_ID,
       label: "Family",
       address: "700 Grand Concourse, Bronx, NY",
       latitude: 40.8216,
@@ -658,7 +648,7 @@ const seedSavedLocations = async () => {
       tags: ["Family"],
     },
     {
-      userId: testUserId,
+      userId: KEVIN_USER_ID,
       label: "Gym",
       address: "120 Bay Street, Staten Island, NY",
       latitude: 40.6369,
@@ -666,7 +656,7 @@ const seedSavedLocations = async () => {
       tags: ["Gym"],
     },
     {
-      userId: otherUserId,
+      userId: ALEX_USER_ID,
       label: "Other User Home",
       address: "476 Fifth Avenue, Manhattan, NY",
       latitude: 40.7532,
@@ -674,7 +664,7 @@ const seedSavedLocations = async () => {
       tags: ["Home"],
     },
     {
-      userId: thirdUserId,
+      userId: MARIA_USER_ID,
       label: "Other User Work",
       address: "500 Bedford Avenue, Brooklyn, NY",
       latitude: 40.7081,
