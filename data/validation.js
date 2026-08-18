@@ -150,11 +150,56 @@ export const validCategories = [
 ];
 
 export const validStates = [
-  "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-  "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-  "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-  "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-  "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+  "AL",
+  "AK",
+  "AZ",
+  "AR",
+  "CA",
+  "CO",
+  "CT",
+  "DE",
+  "FL",
+  "GA",
+  "HI",
+  "ID",
+  "IL",
+  "IN",
+  "IA",
+  "KS",
+  "KY",
+  "LA",
+  "ME",
+  "MD",
+  "MA",
+  "MI",
+  "MN",
+  "MS",
+  "MO",
+  "MT",
+  "NE",
+  "NV",
+  "NH",
+  "NJ",
+  "NM",
+  "NY",
+  "NC",
+  "ND",
+  "OH",
+  "OK",
+  "OR",
+  "PA",
+  "RI",
+  "SC",
+  "SD",
+  "TN",
+  "TX",
+  "UT",
+  "VT",
+  "VA",
+  "WA",
+  "WV",
+  "WI",
+  "WY",
 ];
 
 export const officialOnlyCategories = [
@@ -337,6 +382,67 @@ export const validateEmail = (email) => {
 
   return email.toLowerCase();
 };
+
+export const validatePassword = (password) => {
+  password = validateString(password, "password");
+
+  if (password.length < 8) {
+    throw "Password must be at least 8 characters long";
+  }
+
+  if (password.includes(" ")) {
+    throw "Password cannot contain spaces";
+  }
+
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    throw "Password must contain at least one special character";
+  }
+
+  if (!/[0-9]/.test(password)) {
+    throw "Password must contain at least one number";
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    throw "Password must contain at least one uppercase letter";
+  }
+
+  return password;
+};
+
+export const validateName = (name, nameName) => {
+  name = validateString(name, nameName);
+
+  if (!/^[a-zA-Z]+$/.test(name)) {
+    throw `${nameName} must contain only letters`;
+  }
+
+  return name;
+};
+
+export const validateUsername = (username) => {
+  username = validateString(username, "username");
+
+  if (username.includes(" ")) {
+    throw "Username cannot contain spaces";
+  }
+
+  if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+    throw "Username can only contain letters, numbers, underscores, and hyphens";
+  }
+
+  return username.toLowerCase();
+};
+
+export const validateCity = (city) => {
+  city = validateString(city, "city");
+
+  if (!/^[a-zA-Z ]+$/.test(city)) {
+    throw "City must contain only letters and spaces";
+  }
+
+  return city;
+};
+
 /* official crime reports validation */
 
 export const validatePrecinct = (precinct) => {
@@ -508,7 +614,11 @@ export const validateVoteType = (type) => {
 
 /* reportFlags validation */
 
-export const validFlagReasons = ["Misinformation", "Inappropriate Report", "Other"];
+export const validFlagReasons = [
+  "Misinformation",
+  "Inappropriate Report",
+  "Other",
+];
 
 export const validateFlagReason = (reason) => {
   reason = validateString(reason, "flag reason");
@@ -517,7 +627,8 @@ export const validateFlagReason = (reason) => {
     return validReason.toLowerCase() === reason.toLowerCase();
   });
 
-  if (!allowedFlagReason) throw `Flag must be one of: ${validFlagReasons.join(", ")}`;
+  if (!allowedFlagReason)
+    throw `Flag must be one of: ${validFlagReasons.join(", ")}`;
 
   return allowedFlagReason;
 };

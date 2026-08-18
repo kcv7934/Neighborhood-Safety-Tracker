@@ -304,8 +304,8 @@ export const searchUserReports = async ({
   }
 
   if (endDate !== undefined && endDate !== "") {
-    validateEndDate = validation.validateDate(endDate, "endDate");
-    validateEndDate.setUTCHours(23, 59, 59, 999);
+    validatedEndDate = validation.validateDate(endDate, "endDate");
+    validatedEndDate.setUTCHours(23, 59, 59, 999);
   }
 
   if (
@@ -379,7 +379,7 @@ export const hideUserReport = async (reportId) => {
     },
   );
 
-  if (!updateUserReport)
+  if (!updatedUserReport)
     throw new NotFoundError(`No user report found with id '${reportId}'`);
 
   updatedUserReport._id = updatedUserReport._id.toString();

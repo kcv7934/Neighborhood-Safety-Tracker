@@ -51,18 +51,6 @@ export const queryOfficialReportsFromDB = async () => {
 
   baseUrl += `?app_token=${appToken}`;
 
-  //const currentDate = new Date();
-  //const currentYear = currentDate.getFullYear();
-
-  // Gets 3 months ago from the current date
-  //const monthsBefore = 3;
-  //const currentMonth = String(currentDate.getMonth() + 1 - 3).padStart(2, "0");
-
-  //const currentDay = String(currentDate.getDate()).padStart(2, "0");
-  //const formattedDate = `${currentYear}-${currentMonth}-${currentDay}`;
-
-  //baseUrl += `&query=SELECT%20*%20WHERE%20%60cmplnt_fr_dt%60%20%3E%3D%20'${formattedDate}'`;
-
   // Gets from start of current year to present
   const currentYear = new Date().getFullYear();
   const formattedDate = `${currentYear}-01-01`;

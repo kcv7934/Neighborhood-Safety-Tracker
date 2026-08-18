@@ -118,6 +118,13 @@ router.get("/results", async (req, res) => {
         return (dateA - dateB) * sortDirection;
       }
 
+      if (sortBy === "precinct") {
+        const precinctA = Number(a.precinct);
+        const precinctB = Number(b.precinct);
+
+        return (precinctA - precinctB) * sortDirection;
+      }
+
       const valueA = String(a[sortBy]);
       const valueB = String(b[sortBy]);
 
