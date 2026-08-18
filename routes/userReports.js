@@ -3,6 +3,12 @@ import * as userReportData from "../data/userReports.js";
 import * as validation from "../data/validation.js";
 import { handleApiError, handlePageError } from "./errorHandlers.js";
 import xss from "xss";
+import * as commentData from "../data/comments.js";
+import * as reportVoteData from "../data/reportVotes.js";
+import * as commentVoteData from "../data/commentVotes.js";
+import * as reportFlagData from "../data/reportFlags.js";
+import * as userData from "../data/users.js";
+import { report } from "process";
 
 const router = Router();
 
@@ -127,14 +133,61 @@ router
   .get(async (req, res) => {
     try {
       const id = req.params.userReportId;
+      const userId = req.session.user.id;
 
       const userReport = await userReportData.getUserReportById(id);
 
+      const reportAuthor = await userData.getUserById(userReport.authorId);
+
       const preparedUserReport = {
         ...userReport,
+        authorUsername: reportAuthor.username,
         createdAt: userReport.createdAt.toLocaleString(),
         updatedAt: userReport.updatedAt.toLocaleString(),
       };
+
+      const comments = await commentData.getCommentsByReport(id);
+
+      const preparedComments = [];
+
+      for (const comment of comments) {
+        const commentAuthor = await userData.getUserById(comment.authorId);
+
+        const commentVoteCounts = await commentVoteData.getCommentVoteCounts(
+          comment._id,
+        );
+
+        const userCommentVote = await commentVoteData.getUserCommentVote(
+          comment._id,
+          userId,
+        );
+
+        let currentCommentVoteType = null;
+
+        if (userCommentVote) currentCommentVoteType = userCommentVote.type;
+
+        preparedComments.push({
+          ...comment,
+          createdAt: comment.createdAt.toLocaleString(),
+          updatedAt: comment.updatedAt.toLocaleString(),
+          isOwner: comment.authorId === userId,
+          voteCounts: commentVoteCounts,
+          currentVoteType: currentCommentVoteType,
+          authorUsername: commentAuthor.username,
+        });
+      }
+
+      const userReportVote = await reportVoteData.getUserReportVote(id, userId);
+
+      const reportVoteCounts = await reportVoteData.getReportVoteCounts(id);
+
+      let currentReportVoteType = null;
+
+      if (userReportVote) currentReportVoteType = userReportVote.type;
+
+      const userReportFlag = await reportFlagData.getUserReportFlag(id, userId);
+
+      const hasFlagged = userReportFlag ? true : false;
 
       let successMessage = null;
 
@@ -147,8 +200,13 @@ router
       return res.render("userReports/reportDetails", {
         title: "User Report Detail",
         report: preparedUserReport,
-        isOwner: userReport.authorId === req.session.user.id,
+        isOwner: userReport.authorId === userId,
         successMessage,
+        comments: preparedComments,
+        voteCounts: reportVoteCounts,
+        currentVoteType: currentReportVoteType,
+        hasFlagged,
+        flagReasons: validation.validFlagReasons,
         partial: "user_report_script",
         stylesheet: "userReports.css",
       });
@@ -182,7 +240,7 @@ router
       if (req.body.description !== undefined) {
         updates.description = xss(req.body.description);
       }
-      
+
       const updatedUserReport = await userReportData.updateUserReport(
         id,
         req.session.user.id,

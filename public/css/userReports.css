@@ -30,3 +30,135 @@
 .report-details h2 {
   margin-top: 10px;
 }
+
+.comments-section {
+  margin-top: 25px;
+}
+
+#comment-form {
+  max-width: 700px;
+}
+
+.comment-card {
+  max-width: 700px;
+  padding: 15px;
+  margin-top: 15px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+}
+
+.comment-card .page-actions {
+  margin-top: 14px;
+}
+
+.edit-comment-button {
+  color: #ffffff;
+  background-color: #4f46e5;
+  border: 1px solid #4338ca;
+  border-radius: 5px;
+}
+
+.edit-comment-button:hover,
+.edit-comment-button:focus {
+  background-color: #3730a3;
+}
+
+.report-votes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  max-width: 700px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+}
+
+#upvote-report-button,
+.upvote-comment-button {
+  color: #ffffff;
+  background-color: #16a34a;
+  border: 1px solid #15803d;
+  border-radius: 5px;
+}
+
+#upvote-report-button:hover,
+.upvote-comment-button:hover {
+  background-color: #15803d;
+}
+
+#downvote-report-button,
+.downvote-comment-button {
+  color: #ffffff;
+  background-color: #b91c1c;
+  border: 1px solid #991b1b;
+  border-radius: 5px;
+}
+
+#downvote-report-button:hover,
+.downvote-comment-button:hover {
+  background-color: #991b1b;
+}
+
+#upvote-report-button:disabled,
+#downvote-report-button:disabled,
+.upvote-comment-button:disabled,
+.downvote-comment-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+#upvote-count,
+#downvote-count {
+  font-weight: bold;
+}
+
+.comment-votes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.comment-votes span {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.report-flags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  max-width: 700px;
+  padding: 15px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+}
+
+.report-flags label {
+  font-weight: bold;
+}
+
+#flag-report-button {
+  color: #ffffff;
+  background-color: #d97706;
+  border: 1px solid #b45309;
+  border-radius: 5px;
+}
+
+#flag-report-button:hover {
+  background-color: #b45309;
+}
+
+.flagged-already {
+  padding: 0px;
+}

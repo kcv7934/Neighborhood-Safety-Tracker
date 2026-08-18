@@ -10,6 +10,11 @@
   <h2>{{report.category}}</h2>
 
   <p>
+    <strong>Reported By:</strong>
+    {{report.authorUsername}}
+  </p>
+
+  <p>
     <strong>Address:</strong>
     {{report.address}}
   </p>
@@ -40,6 +45,53 @@
   </p>
 </article>
 
+{{#if isOwner}}{{else}}
+  <div class="report-votes">
+    <input type="hidden" id="current-report-vote" value="{{currentVoteType}}" />
+
+    <button
+      type="button"
+      id="upvote-report-button"
+      value="{{report._id}}"
+    >Upvote</button>
+
+    <span id="upvote-count">
+      {{voteCounts.upvotes}}
+    </span>
+
+    <button type="button" id="downvote-report-button" value="{{report._id}}">
+      Downvote
+    </button>
+
+    <span id="downvote-count">
+      {{voteCounts.downvotes}}
+    </span>
+  </div>
+
+  <div id="report-vote-message" class="form-message" role="alert" hidden></div>
+  <div class="report-flags">
+    {{#if hasFlagged}}
+      <p class="flagged-already">You have already flagged this report.</p>
+    {{else}}
+      <label for="flag-reason">Flag Report:</label>
+
+      <select id="flag-reason" name="reason">
+        <option value="">Select a reason</option>
+
+        {{#each flagReasons}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+
+      <button type="button" id="flag-report-button" value="{{report._id}}">
+        Flag Report
+      </button>
+    {{/if}}
+  </div>
+
+  <div id="report-flag-message" class="form-message" role="alert" hidden></div>
+{{/if}}
+
 <div class="page-actions">
   {{#if isOwner}}
     <a
@@ -66,3 +118,120 @@
 {{#if isOwner}}
   <div id="delete-message" class="form-message" role="alert" hidden></div>
 {{/if}}
+
+<section class="comments-section">
+  <h2>Discussion</h2>
+
+  <form id="comment-form" class="page-form">
+    <input
+      type="hidden"
+      id="comment-report-id"
+      name="reportId"
+      value="{{report._id}}"
+    />
+
+    <div class="form-field">
+      <label for="comment-text">Add a Comment</label>
+      <textarea
+        id="comment-text"
+        name="text"
+        maxlength="500"
+        required
+      ></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit">Post Comment</button>
+    </div>
+
+    <div
+      id="comment-form-message"
+      class="form-message"
+      role="alert"
+      hidden
+    ></div>
+  </form>
+
+  <div id="comment-list">
+    {{#if comments.length}}
+      {{#each comments}}
+        <article class="comment-card" data-comment-id="{{_id}}">
+          <p>
+            <strong>{{authorUsername}}</strong>
+          </p>
+
+          <p id="comment-text-{{_id}}" class="comment-text">{{text}}</p>
+
+          <p>
+            <strong>Created:</strong>
+            {{createdAt}}
+          </p>
+
+          <p>
+            <strong>Last Updated:</strong>
+            {{updatedAt}}
+          </p>
+
+          {{#if isOwner}}
+            <div class="page-actions">
+              <button type="button" class="edit-comment-button" value="{{_id}}">
+                Edit
+              </button>
+
+              <button
+                type="button"
+                class="delete-button delete-comment-button"
+                value="{{_id}}"
+              >
+                Delete
+              </button>
+            </div>
+          {{else}}
+            <div class="comment-votes">
+              <input
+                type="hidden"
+                id="current-comment-vote-{{_id}}"
+                value="{{currentVoteType}}"
+              />
+
+              <button
+                type="button"
+                id="upvote-comment-button-{{_id}}"
+                class="upvote-comment-button"
+                value="{{_id}}"
+              >
+                Upvote
+              </button>
+
+              <span id="comment-upvote-count-{{_id}}">
+                {{voteCounts.upvotes}}
+              </span>
+
+              <button
+                type="button"
+                id="downvote-comment-button-{{_id}}"
+                class="downvote-comment-button"
+                value="{{_id}}"
+              >
+                Downvote
+              </button>
+
+              <span id="comment-downvote-count-{{_id}}">
+                {{voteCounts.downvotes}}
+              </span>
+            </div>
+
+            <div
+              id="comment-vote-message-{{_id}}"
+              class="form-message"
+              role="alert"
+              hidden
+            ></div>
+          {{/if}}
+        </article>
+      {{/each}}
+    {{else}}
+      <p>No comments yet.</p>
+    {{/if}}
+  </div>
+</section>

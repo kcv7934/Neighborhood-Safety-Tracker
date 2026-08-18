@@ -1,5 +1,11 @@
 <h1>Search Complaints</h1>
 
+{{#if statusMessage}}
+  <p class="status-message" role="status">
+    {{statusMessage}}
+  </p>
+{{/if}}
+
 <form id="complaint-search-form">
   <div class="form-field">
     <label for="source">Report Source:</label>

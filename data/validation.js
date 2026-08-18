@@ -485,3 +485,39 @@ export const validateSource = (source) => {
   return source;
 };
 
+/* comments validation */
+
+export const validateCommentText = (text) => {
+  text = validateString(text, "Comment Text");
+
+  if (text.length > 500) throw "Comment cannot be more than 500 characters";
+
+  return text;
+};
+
+/* reportVotes validation */
+
+export const validateVoteType = (type) => {
+  type = validateString(type, "vote type").toLowerCase();
+
+  if (type !== "upvote" && type !== "downvote")
+    throw "Vote type must be either upvote or downvote";
+
+  return type;
+};
+
+/* reportFlags validation */
+
+export const validFlagReasons = ["Misinformation", "Inappropriate Report", "Other"];
+
+export const validateFlagReason = (reason) => {
+  reason = validateString(reason, "flag reason");
+
+  const allowedFlagReason = validFlagReasons.find((validReason) => {
+    return validReason.toLowerCase() === reason.toLowerCase();
+  });
+
+  if (!allowedFlagReason) throw `Flag must be one of: ${validFlagReasons.join(", ")}`;
+
+  return allowedFlagReason;
+};
