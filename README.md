@@ -56,7 +56,7 @@ npm start
 ```
 ## Test Users 
 
-The seed file creates some users for testing different features. All test users use the same password for ease of access.
+The seed file creates some users for testing different features. All test users use the same password for ease of access. The password is "Password1!"
 
 Username: kevin | Email : kevin@test.com
 
